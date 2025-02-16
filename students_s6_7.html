@@ -43,12 +43,31 @@
     </div>
 
     <!-- تحميل المؤثرات الصوتية -->
-    <audio id="success-sound" src="success.mp3"></audio> <!-- صوت عند إضافة نقطة -->
-    <audio id="error-sound" src="error.mp3"></audio> <!-- صوت عند إنقاص نقطة -->
-    <audio id="warning-sound" src="warning.mp3"></audio> <!-- صوت عند إضافة مخالفة -->
-    <audio id="good-sound" src="good.mp3"></audio> <!-- صوت عند إضافة سلوك جيد -->
+    <audio id="success-sound" src="success.mp3"></audio>
+    <audio id="error-sound" src="error.mp3"></audio>
+    <audio id="warning-sound" src="warning.mp3"></audio>
+    <audio id="good-sound" src="good.mp3"></audio>
+
+    <!-- إضافة Firebase -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js"></script>
 
     <script>
+        // إعداد Firebase
+        const firebaseConfig = {
+            apiKey: "AIzaSyDsEKfm5O_o1xuHFgAIg6sNUhljLAL5JHE",
+            authDomain: "th7-2b884.firebaseapp.com",
+            databaseURL: "https://th7-2b884-default-rtdb.firebaseio.com",
+            projectId: "th7-2b884",
+            storageBucket: "th7-2b884.firebasestorage.app",
+            messagingSenderId: "856547314209",
+            appId: "1:856547314209:web:ab22b775d3b73ae9b63160"
+        };
+
+        // تهيئة Firebase
+        const app = firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
         const students = [
             "ابوبكر عبدالله بير محمد",
             "خليفه زايد هادف محسن الحسناوى",
@@ -71,68 +90,51 @@
             "خالد محمد هادى محمد انديله"
         ];
 
-        function formatName(fullName) {
-            let parts = fullName.split(" ");
-            if (parts.length >= 3) {
-                return parts[0] + " " + parts[1] + " " + parts[parts.length - 1];
-            }
-            return fullName;
-        }
-
         function updateStudentList() {
             const listContainer = document.getElementById("student-list");
             listContainer.innerHTML = "";
 
             students.forEach(student => {
-                let shortName = formatName(student);
-                let score = JSON.parse(localStorage.getItem(student + "_score_s6_7")) || 0;
-                let warnings = JSON.parse(localStorage.getItem(student + "_warnings_s6_7")) || 0;
-                let goodBehavior = JSON.parse(localStorage.getItem(student + "_good_s6_7")) || 0;
+                let shortName = student.split(" ").slice(0, 2).join(" ");
 
-                let studentDiv = document.createElement("div");
-                studentDiv.className = "student-box";
-                studentDiv.innerHTML = `
-                    <h3>${shortName}</h3>
-                    <p class="stats">🏆 النقاط: <strong id="${student}_score">${score}</strong></p>
-                    <p class="stats">⚠️ المخالفات: <strong id="${student}_warnings">${warnings}</strong></p>
-                    <p class="stats">🌟 السلوك الجيد: <strong id="${student}_good">${goodBehavior}</strong></p>
+                db.ref("students_s6_7/" + student).on("value", snapshot => {
+                    let data = snapshot.val() || { score: 0, warnings: 0, good: 0 };
 
-                    <button class="btn add-btn" onclick="modifyScore('${student}', '_score_s6_7', 1, 'success-sound')">+ نقطة</button>
-                    <button class="btn remove-btn" onclick="modifyScore('${student}', '_score_s6_7', -1, 'error-sound')">- نقطة</button>
-                    <button class="btn warning-btn" onclick="modifyScore('${student}', '_warnings_s6_7', 1, 'warning-sound')">⚠️ مخالفة</button>
-                    <button class="btn good-btn" onclick="modifyScore('${student}', '_good_s6_7', 1, 'good-sound')">🌟 سلوك جيد</button>
-                `;
-                listContainer.appendChild(studentDiv);
+                    let studentDiv = document.createElement("div");
+                    studentDiv.className = "student-box";
+                    studentDiv.innerHTML = `
+                        <h3>${shortName}</h3>
+                        <p class="stats">🏆 النقاط: <strong id="${student}_score">${data.score}</strong></p>
+                        <p class="stats">⚠️ المخالفات: <strong id="${student}_warnings">${data.warnings}</strong></p>
+                        <p class="stats">🌟 السلوك الجيد: <strong id="${student}_good">${data.good}</strong></p>
+
+                        <button class="btn add-btn" onclick="modifyScore('${student}', 'score', 1)">+ نقطة</button>
+                        <button class="btn remove-btn" onclick="modifyScore('${student}', 'score', -1)">- نقطة</button>
+                        <button class="btn warning-btn" onclick="modifyScore('${student}', 'warnings', 1)">⚠️ مخالفة</button>
+                        <button class="btn good-btn" onclick="modifyScore('${student}', 'good', 1)">🌟 سلوك جيد</button>
+                    `;
+                    listContainer.appendChild(studentDiv);
+                });
             });
         }
 
-        function modifyScore(student, key, amount, soundId) {
-            let fieldKey = student + key;
-            let currentValue = JSON.parse(localStorage.getItem(fieldKey)) || 0;
-            currentValue += amount;
-            localStorage.setItem(fieldKey, JSON.stringify(currentValue));
-
-            let fieldElement = document.getElementById(student + key.replace("_s6_7", ""));
-            fieldElement.innerText = currentValue;
-
-            let sound = document.getElementById(soundId);
-            if (sound) {
-                sound.play();
-            }
-
-            fieldElement.classList.add("highlight");
-            setTimeout(() => fieldElement.classList.remove("highlight"), 500);
+        function modifyScore(student, key, amount) {
+            let studentRef = db.ref("students_s6_7/" + student + "/" + key);
+            studentRef.once("value", snapshot => {
+                let currentValue = snapshot.val() || 0;
+                studentRef.set(currentValue + amount);
+            });
         }
 
         function resetAllScores() {
             if (confirm("هل أنت متأكد من إعادة تعيين جميع البيانات؟")) {
                 students.forEach(student => {
-                    localStorage.setItem(student + "_score_s6_7", JSON.stringify(0));
-                    localStorage.setItem(student + "_warnings_s6_7", JSON.stringify(0));
-                    localStorage.setItem(student + "_good_s6_7", JSON.stringify(0));
+                    db.ref("students_s6_7/" + student).set({
+                        score: 0,
+                        warnings: 0,
+                        good: 0
+                    });
                 });
-
-                updateStudentList();
                 alert("تم إعادة تعيين جميع البيانات!");
             }
         }
