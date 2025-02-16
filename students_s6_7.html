@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نقاط الطلاب - سادس 7</title>
+    <style>
+        body { font-family: Arial, sans-serif; direction: rtl; text-align: center; background-color: #f4f4f4; }
+        .container { max-width: 1100px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .student-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 15px; text-align: center; }
+        .student-box { padding: 10px; background: #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+        .stats { font-size: 16px; margin-top: 5px; }
+        .btn { padding: 8px; margin: 3px; border: none; cursor: pointer; border-radius: 5px; font-size: 14px; width: 90%; transition: transform 0.1s, background 0.2s; }
+        .add-btn { background: green; color: white; }
+        .remove-btn { background: red; }
+        .warning-btn { background: orange; color: white; }
+        .good-btn { background: blue; color: white; }
+        .reset-btn { background: darkred; color: white; width: 100%; padding: 10px; margin-top: 15px; }
+
+        /* تأثير عند الضغط على الأزرار */
+        .btn:active {
+            transform: scale(0.9);
+        }
+
+        /* تأثير الوميض عند تحديث القيم */
+        .highlight {
+            animation: flash 0.5s;
+        }
+
+        @keyframes flash {
+            0% { background-color: yellow; }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>نقاط الطلاب - سادس 7</h1>
+        <div class="student-grid" id="student-list"></div>
+
+        <button class="reset-btn" onclick="resetAllScores()">🔄 إعادة تعيين جميع النقاط</button>
+    </div>
+
+    <!-- تحميل المؤثرات الصوتية من الملفات المحلية -->
+    <audio id="success-sound" src="success.mp3"></audio> <!-- صوت عند إضافة نقطة -->
+    <audio id="error-sound" src="error.mp3"></audio> <!-- صوت عند إنقاص نقطة -->
+    <audio id="warning-sound" src="warning.mp3"></audio> <!-- صوت عند إضافة مخالفة -->
+    <audio id="good-sound" src="good.mp3"></audio> <!-- صوت عند إضافة سلوك جيد -->
+
+    <script>
+        const students = [
+            "ابوبكر عبدالله بير محمد",
+            "خليفه زايد هادف محسن الحسناوى",
+            "سعيد سالم على محمد النابت",
+            "محمد اسحاق",
+            "حمد عبدالله مطيع عبدالله الاحبابى",
+            "حمد محمد هاشم",
+            "حمدان مبارك محمد على حيدان",
+            "خالد حمد راشد الزكيبا المرى",
+            "خالد على راشد على القاشوطى",
+            "خليفه جان",
+            "سعود عبدالله مطيع عبدالله الاحبابى",
+            "عبدالعزيز محبوب جول جنان",
+            "عبدالعزيز محمد فرج النابت المرى",
+            "علي خالد عبدالهادي مثيب المرى",
+            "محمد سالم على الجربوعى المرى",
+            "محمد ناصر محمد ال شنان الحبابى",
+            "يوسف محمد دانى بخش",
+            "سعيد ناصر على محمد بخيته",
+            "خالد محمد هادى محمد انديله"
+        ];
+
+        function formatName(fullName) {
+            let parts = fullName.split(" ");
+            if (parts.length >= 3) {
+                return parts[0] + " " + parts[1] + " " + parts[parts.length - 1];
+            }
+            return fullName;
+        }
+
+        function updateStudentList() {
+            const listContainer = document.getElementById("student-list");
+            listContainer.innerHTML = "";
+
+            students.forEach(student => {
+                let shortName = formatName(student);
+                let score = JSON.parse(localStorage.getItem(student + "_score_s6_7")) || 0;
+                let warnings = JSON.parse(localStorage.getItem(student + "_warnings_s6_7")) || 0;
+                let goodBehavior = JSON.parse(localStorage.getItem(student + "_good_s6_7")) || 0;
+
+                let studentDiv = document.createElement("div");
+                studentDiv.className = "student-box";
+                studentDiv.innerHTML = `
+                    <h3>${shortName}</h3>
+                    <p class="stats">🏆 النقاط: <strong id="${student}_score">${score}</strong></p>
+                    <p class="stats">⚠️ المخالفات: <strong id="${student}_warnings">${warnings}</strong></p>
+                    <p class="stats">🌟 السلوك الجيد: <strong id="${student}_good">${goodBehavior}</strong></p>
+
+                    <button class="btn add-btn" onclick="modifyScore('${student}', '_score_s6_7', 1, 'success-sound')">+ نقطة</button>
+                    <button class="btn remove-btn" onclick="modifyScore('${student}', '_score_s6_7', -1, 'error-sound')">- نقطة</button>
+                    <button class="btn warning-btn" onclick="modifyScore('${student}', '_warnings_s6_7', 1, 'warning-sound')">⚠️ مخالفة</button>
+                    <button class="btn good-btn" onclick="modifyScore('${student}', '_good_s6_7', 1, 'good-sound')">🌟 سلوك جيد</button>
+                `;
+                listContainer.appendChild(studentDiv);
+            });
+        }
+
+        function modifyScore(student, key, amount, soundId) {
+            let fieldKey = student + key;
+            let currentValue = JSON.parse(localStorage.getItem(fieldKey)) || 0;
+            currentValue += amount;
+            localStorage.setItem(fieldKey, JSON.stringify(currentValue));
+
+            let fieldElement = document.getElementById(student + key.replace("_s6_7", ""));
+            fieldElement.innerText = currentValue;
+
+            // تشغيل الصوت المناسب
+            let sound = document.getElementById(soundId);
+            if (sound) {
+                sound.play();
+            }
+
+            // إضافة تأثير الوميض عند التحديث
+            fieldElement.classList.add("highlight");
+            setTimeout(() => fieldElement.classList.remove("highlight"), 500);
+        }
+
+        updateStudentList();
+    </script>
+
+</body>
+</html>

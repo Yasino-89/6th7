@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>صفحة الفريق</title>
+    <style>
+        body { font-family: Arial, sans-serif; direction: rtl; text-align: center; background-color: #f4f4f4; }
+        .container { max-width: 500px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 20px; }
+        .buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; }
+        button { padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 18px; transition: 0.3s; }
+        button.selected { background: #28A745 !important; color: white; }
+        .reset { background: red; }
+        .stats { text-align: center; margin-top: 20px; }
+        .stats p { font-size: 18px; margin: 5px; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1 id="team-name"></h1>
+        
+        <h2>النقاط: <span id="team-score">0</span></h2>
+        <div class="stats">
+            <p>🏆 الأهداف التي له: <span id="goalsFor">0</span></p>
+            <p>⚽ الأهداف التي عليه: <span id="goalsAgainst">0</span></p>
+            <p>🧤 التصديات: <span id="saves">0</span></p>
+        </div>
+
+        <h2>اختيارات الحارس (يمكن اختيار 4 أرقام)</h2>
+        <div class="buttons" id="goalkeeperButtons"></div>
+        <p>اختيارات الحارس: <span id="selectedSaves">لا يوجد</span></p>
+
+        <h2>اختيارات المدافع (يمكن اختيار 4 أرقام)</h2>
+        <div class="buttons" id="defenderButtons"></div>
+        <p>اختيارات المدافع: <span id="selectedDefense">لا يوجد</span></p>
+
+        <h2>اختر الفريق المهاجم</h2>
+        <select id="attackingTeam">
+            <option value="">-- اختر الفريق المهاجم --</option>
+            <option value="ريال مدريد">ريال مدريد</option>
+            <option value="ليفربول">ليفربول</option>
+            <option value="الهلال">الهلال</option>
+        </select>
+
+        <h2>اختيار رقم التسديد</h2>
+        <div class="buttons" id="attackerButtons"></div>
+        <p>رقم المهاجم: <span id="attackerChoice">لا يوجد</span></p>
+
+        <button onclick="processShot()">⚽ تسديد الكرة</button>
+        <button class="reset" onclick="resetChoices()">🔄 إعادة تعيين الاختيارات</button>
+        <br><br>
+        <a href="index_s6_4.html"><button style="background: red;">🏠 العودة إلى الصفحة الرئيسية</button></a>
+    </div>
+
+    <script>
+        const pageMap = {
+            "real_madrid_s6_4.html": "ريال مدريد",
+            "liverpool_s6_4.html": "ليفربول",
+            "al_hilal_s6_4.html": "الهلال"
+        };
+
+        const filename = location.pathname.split("/").pop();
+        const teamName = pageMap[filename] || "الريان";
+
+        document.title = document.getElementById("team-name").innerText = teamName;
+
+        let selectedNumbers = JSON.parse(localStorage.getItem(teamName + "_goalkeeper_s6_4")) || [];
+        let selectedDefenderNumbers = JSON.parse(localStorage.getItem(teamName + "_defender_s6_4")) || [];
+        let attackerChoice = JSON.parse(localStorage.getItem(teamName + "_attacker_s6_4")) || null;
+
+        function updateDisplay() {
+            document.getElementById("selectedSaves").innerText = selectedNumbers.length ? selectedNumbers.join(", ") : "لا يوجد";
+            document.getElementById("selectedDefense").innerText = selectedDefenderNumbers.length ? selectedDefenderNumbers.join(", ") : "لا يوجد";
+            document.getElementById("attackerChoice").innerText = attackerChoice !== null ? attackerChoice : "لا يوجد";
+
+            document.querySelectorAll(".buttons button").forEach(btn => btn.classList.remove("selected"));
+
+            selectedNumbers.forEach(num => {
+                document.querySelector(`#goalkeeperButtons button[data-num="${num}"]`).classList.add("selected");
+            });
+
+            selectedDefenderNumbers.forEach(num => {
+                document.querySelector(`#defenderButtons button[data-num="${num}"]`).classList.add("selected");
+            });
+
+            if (attackerChoice !== null) {
+                document.querySelector(`#attackerButtons button[data-num="${attackerChoice}"]`).classList.add("selected");
+            }
+        }
+
+        function toggleSelection(number, type) {
+            if (type === "goalkeeper") {
+                if (selectedNumbers.includes(number)) {
+                    selectedNumbers = selectedNumbers.filter(n => n !== number);
+                } else if (selectedNumbers.length < 4) {
+                    selectedNumbers.push(number);
+                }
+                localStorage.setItem(teamName + "_goalkeeper_s6_4", JSON.stringify(selectedNumbers));
+            } else if (type === "defender") {
+                if (selectedDefenderNumbers.includes(number)) {
+                    selectedDefenderNumbers = selectedDefenderNumbers.filter(n => n !== number);
+                } else if (selectedDefenderNumbers.length < 4) {
+                    selectedDefenderNumbers.push(number);
+                }
+                localStorage.setItem(teamName + "_defender_s6_4", JSON.stringify(selectedDefenderNumbers));
+            } else if (type === "attacker") {
+                attackerChoice = number;
+                localStorage.setItem(teamName + "_attacker_s6_4", JSON.stringify(attackerChoice));
+            }
+            updateDisplay();
+        }
+
+        function resetChoices() {
+            selectedNumbers = [];
+            selectedDefenderNumbers = [];
+            attackerChoice = null;
+            localStorage.removeItem(teamName + "_goalkeeper_s6_4");
+            localStorage.removeItem(teamName + "_defender_s6_4");
+            localStorage.removeItem(teamName + "_attacker_s6_4");
+            updateDisplay();
+        }
+
+        function generateButtons() {
+            for (let i = 1; i <= 10; i++) {
+                document.getElementById("goalkeeperButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'goalkeeper')">${i}</button>`;
+                document.getElementById("defenderButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'defender')">${i}</button>`;
+                document.getElementById("attackerButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'attacker')">${i}</button>`;
+            }
+            updateDisplay();
+        }
+
+        generateButtons();
+    </script>
+
+</body>
+</html>
