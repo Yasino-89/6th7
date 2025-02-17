@@ -3,159 +3,121 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>لوحة تسجيل النقاط - سادس7</title>
+    <title>لوحة تسجيل النقاط - سادس 7</title>
     <style>
         body { font-family: Arial, sans-serif; direction: rtl; text-align: center; background-color: #f4f4f4; }
-        .container { max-width: 700px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 20px; }
-        .team-box { padding: 10px; margin: 10px 0; background: #ddd; border-radius: 5px; }
-        .stats { text-align: center; font-size: 16px; margin-top: 5px; }
-        .reset-btn, .add-btn { background: green; color: white; padding: 10px; margin: 5px auto; border: none; cursor: pointer; border-radius: 5px; font-size: 16px; }
-        .remove-btn { background: red; }
-        .active { background: orange !important; color: black; }
+        .container { max-width: 1400px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
+        .team-box { padding: 15px; background: #ddd; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
+        .team-box img { width: 150px; height: 170px; border-radius: 10px; margin-bottom: 10px; }
+        .team-name { font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .team-score { font-size: 20px; font-weight: bold; color: #007BFF; }
+        .shots-container { font-size: 18px; font-weight: bold; color: #8B0000; margin: 10px 0; }
+        .stats-table { width: 100%; margin: 10px auto; border-collapse: collapse; }
+        .stats-table th, .stats-table td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 16px; }
+        .btn-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; }
+        .btn { padding: 8px; border: none; cursor: pointer; border-radius: 5px; font-size: 14px; width: 48%; transition: transform 0.1s, background 0.2s; }
+        .add-btn { background: green; color: white; }
+        .remove-btn { background: #8B0000; color: white; }
+        .team-btn { background: blue; color: white; padding: 8px; width: 100%; margin-top: 10px; border-radius: 5px; }
+        .reset-btn { background: darkred; color: white; width: 100%; padding: 10px; margin-top: 15px; }
+
+        /* تأثير عند الضغط */
+        .btn:active { transform: scale(0.9); }
+        .team-btn:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>لوحة تسجيل النقاط - سادس7</h1>
-        <div id="team-stats"></div>
-
+        <h1>لوحة تسجيل النقاط - سادس 7</h1>
+        <div class="team-grid" id="team-stats"></div>
         <button class="reset-btn" onclick="resetAllScores()">🔄 إعادة تعيين جميع النقاط</button>
     </div>
 
     <script>
-        const teams = ["ريال مدريد", "ليفربول", "برشلونة", "الريان"];
-        const abilities = ["مهاجم", "جناح", "وسط", "مدافع", "حارس"];
+        const teams = [
+            { name: "ريال مدريد", image: "images/real_madrid.png", link: "real_madrid.html" },
+            { name: "ليفربول", image: "images/liverpool.png", link: "liverpool.html" },
+            { name: "الريان", image: "images/al_rayan.png", link: "al_rayan.html" },
+            { name: "برشلونة", image: "images/barcelona.png", link: "barcelona.html" }
+        ];
 
         function updateTeamStats() {
             const statsContainer = document.getElementById("team-stats");
             statsContainer.innerHTML = "";
 
             teams.forEach(team => {
-                let score = JSON.parse(localStorage.getItem(team + "_score")) || 0;
-                let goalsFor = JSON.parse(localStorage.getItem(team + "_goalsFor")) || 0;
-                let goalsAgainst = JSON.parse(localStorage.getItem(team + "_goalsAgainst")) || 0;
-                let saves = JSON.parse(localStorage.getItem(team + "_saves")) || 0;
-                let shots = JSON.parse(localStorage.getItem(team + "_shots")) || 0;
+                let score = JSON.parse(localStorage.getItem(team.name + "_score_s6_7")) || 0;
+                let goalsFor = JSON.parse(localStorage.getItem(team.name + "_goalsFor_s6_7")) || 0;
+                let goalsAgainst = JSON.parse(localStorage.getItem(team.name + "_goalsAgainst_s6_7")) || 0;
+                let saves = JSON.parse(localStorage.getItem(team.name + "_saves_s6_7")) || 0;
+                let shots = JSON.parse(localStorage.getItem(team.name + "_shots_s6_7")) || 0;
 
                 let teamDiv = document.createElement("div");
                 teamDiv.className = "team-box";
                 teamDiv.innerHTML = `
-                    <h2>${team}</h2>
-                    <p class="stats">🏆 النقاط: <strong id="${team}_score">${score}</strong></p>
-                    <p class="stats">⚽ الأهداف التي له: <strong id="${team}_goalsFor">${goalsFor}</strong></p>
-                    <p class="stats">🥅 الأهداف التي عليه: <strong id="${team}_goalsAgainst">${goalsAgainst}</strong></p>
-                    <p class="stats">🧤 التصديات: <strong id="${team}_saves">${saves}</strong></p>
-                    <p class="stats">🎯 التسديدات المتاحة: <strong id="${team}_shots">${shots}</strong></p>
+                    <img src="${team.image}" alt="شعار ${team.name}">
+                    <div class="team-name">
+                        ${team.name}
+                        <span class="team-score" id="${team.name}_score_s6_7">${score}</span>
+                    </div>
 
-                    <button class="add-btn" onclick="addGoal('${team}')">+ هدف</button>
-                    <button class="add-btn remove-btn" onclick="removeGoal('${team}')">- هدف</button>
+                    <div class="shots-container">
+                        🎯 التسديدات المتاحة: <strong id="${team.name}_shots_s6_7">${shots}</strong>
+                    </div>
 
-                    <button class="add-btn" onclick="addGoalAgainst('${team}')">+ هدف عليه</button>
+                    <table class="stats-table">
+                        <tr>
+                            <th>⚽ الأهداف المسجلة</th>
+                            <td id="${team.name}_goalsFor_s6_7">${goalsFor}</td>
+                            <th>🥅 الأهداف المستقبلة</th>
+                            <td id="${team.name}_goalsAgainst_s6_7">${goalsAgainst}</td>
+                            <th>🧤 التصديات</th>
+                            <td id="${team.name}_saves_s6_7">${saves}</td>
+                        </tr>
+                    </table>
 
-                    <button class="add-btn" onclick="addSave('${team}')">+ تصدي</button>
-                    <button class="add-btn remove-btn" onclick="removeSave('${team}')">- تصدي</button>
+                    <div class="btn-container">
+                        <button class="btn add-btn" onclick="modifyStat('${team.name}', '_goalsFor_s6_7', 1, 2)">+ هدف</button>
+                        <button class="btn remove-btn" onclick="modifyStat('${team.name}', '_goalsFor_s6_7', -1, -2)">- هدف</button>
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn add-btn" onclick="modifyStat('${team.name}', '_goalsAgainst_s6_7', 1, -1)">+ هدف عليه</button>
+                        <button class="btn remove-btn" onclick="modifyStat('${team.name}', '_goalsAgainst_s6_7', -1, 1)">- هدف عليه</button>
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn add-btn" onclick="modifyStat('${team.name}', '_saves_s6_7', 1, 1)">+ تصدي</button>
+                        <button class="btn remove-btn" onclick="modifyStat('${team.name}', '_saves_s6_7', -1, -1)">- تصدي</button>
+                    </div>
+                    <div class="btn-container">
+                        <button class="btn add-btn" onclick="modifyStat('${team.name}', '_shots_s6_7', 1, 0)">+ تسديدة</button>
+                        <button class="btn remove-btn" onclick="modifyStat('${team.name}', '_shots_s6_7', -1, 0)">- تسديدة</button>
+                    </div>
 
-                    <button class="add-btn" onclick="addShot('${team}')">+ تسديدة</button>
-                    <button class="add-btn remove-btn" onclick="removeShot('${team}')">- تسديدة</button>
-
-                    <h3>🛡 القدرات الخاصة</h3>
-                    <button class="add-btn" id="${team}_shot3" onclick="toggleAbility('${team}', 'shot3')">⚡ تسديدة بـ3 أهداف</button>
-                    <button class="add-btn" id="${team}_save2" onclick="toggleAbility('${team}', 'save2')">🧤 تصدي بـ2</button>
-
-                    <h3>🔄 القدرة المضاعفة</h3>
-                    ${abilities.map(ability => `
-                        <button class="add-btn" id="${team}_${ability}" onclick="toggleAbility('${team}', '${ability}')">
-                            ${ability.charAt(0).toUpperCase() + ability.slice(1)}
-                        </button>
-                    `).join("")}
+                    <a href="${team.link}"><button class="team-btn">🔍 عرض صفحة الفريق</button></a>
                 `;
                 statsContainer.appendChild(teamDiv);
-
-                // تحديث حالة الأزرار
-                updateAbilityButtons(team);
             });
         }
 
-        function toggleAbility(team, ability) {
-            let status = JSON.parse(localStorage.getItem(team + "_" + ability)) || false;
-            localStorage.setItem(team + "_" + ability, JSON.stringify(!status));
-            updateAbilityButtons(team);
-        }
-
-        function updateAbilityButtons(team) {
-            ["shot3", "save2", ...abilities].forEach(ability => {
-                let button = document.getElementById(`${team}_${ability}`);
-                if (button) {
-                    let status = JSON.parse(localStorage.getItem(team + "_" + ability)) || false;
-                    button.classList.toggle("active", status);
-                }
-            });
-        }
-
-        function addGoal(team) {
-            modifyScore(team, 2);
-            modifyStat(team, "_goalsFor", 1);
-        }
-
-        function removeGoal(team) {
-            modifyScore(team, -2);
-            modifyStat(team, "_goalsFor", -1);
-        }
-
-        function addGoalAgainst(team) {
-            modifyScore(team, -1);
-            modifyStat(team, "_goalsAgainst", 1);
-        }
-
-        function addSave(team) {
-            modifyScore(team, 1);
-            modifyStat(team, "_saves", 1);
-        }
-
-        function removeSave(team) {
-            modifyScore(team, -1);
-            modifyStat(team, "_saves", -1);
-        }
-
-        function addShot(team) {
-            modifyStat(team, "_shots", 1);
-        }
-
-        function removeShot(team) {
-            modifyStat(team, "_shots", -1);
-        }
-
-        function modifyScore(team, amount) {
-            let score = JSON.parse(localStorage.getItem(team + "_score")) || 0;
-            score += amount;
-            localStorage.setItem(team + "_score", JSON.stringify(score));
-            document.getElementById(`${team}_score`).innerText = score;
-        }
-
-        function modifyStat(team, stat, amount) {
+        function modifyStat(team, stat, amount, scoreChange) {
             let value = JSON.parse(localStorage.getItem(team + stat)) || 0;
             value = Math.max(0, value + amount);
             localStorage.setItem(team + stat, JSON.stringify(value));
             document.getElementById(`${team}${stat}`).innerText = value;
+
+            if (scoreChange !== 0) {
+                let score = JSON.parse(localStorage.getItem(team + "_score_s6_7")) || 0;
+                score += scoreChange;
+                localStorage.setItem(team + "_score_s6_7", JSON.stringify(score));
+                document.getElementById(`${team}_score_s6_7`).innerText = score;
+            }
         }
 
         function resetAllScores() {
-            if (confirm("هل أنت متأكد من إعادة تعيين جميع البيانات؟")) {
-                teams.forEach(team => {
-                    localStorage.setItem(team + "_score", JSON.stringify(0));
-                    localStorage.setItem(team + "_goalsFor", JSON.stringify(0));
-                    localStorage.setItem(team + "_goalsAgainst", JSON.stringify(0));
-                    localStorage.setItem(team + "_saves", JSON.stringify(0));
-                    localStorage.setItem(team + "_shots", JSON.stringify(0));
-
-                    ["shot3", "save2", ...abilities].forEach(ability => {
-                        localStorage.setItem(team + "_" + ability, JSON.stringify(false));
-                    });
-                });
-                updateTeamStats();
-                alert("تم إعادة تعيين جميع البيانات!");
-            }
+            teams.forEach(team => localStorage.clear());
+            updateTeamStats();
         }
 
         updateTeamStats();
