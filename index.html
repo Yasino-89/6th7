@@ -9,10 +9,10 @@
         .container { max-width: 1400px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
         .team-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; text-align: center; }
         .team-box { padding: 15px; background: #ddd; border-radius: 10px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; }
-        .team-box img { width: 150px; height: 170px; border-radius: 10px; margin-bottom: 10px; }
+        .team-box img { width: 150px; height: 150px; border-radius: 10px; margin-bottom: 10px; }
         .team-name { font-size: 20px; font-weight: bold; display: flex; justify-content: center; align-items: center; gap: 10px; }
         .team-score { font-size: 20px; font-weight: bold; color: #007BFF; }
-        .shots-container { font-size: 18px; font-weight: bold; color: #8B0000; margin: 10px 0; }
+        .shots-container { font-size: 18px; font-weight: bold; margin: 10px 0; }
         .stats-table { width: 100%; margin: 10px auto; border-collapse: collapse; }
         .stats-table th, .stats-table td { border: 1px solid #000; padding: 8px; text-align: center; font-size: 16px; }
         .btn-container { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 5px; }
@@ -21,6 +21,7 @@
         .remove-btn { background: #8B0000; color: white; }
         .team-btn { background: blue; color: white; padding: 8px; width: 100%; margin-top: 10px; border-radius: 5px; }
         .reset-btn { background: darkred; color: white; width: 100%; padding: 10px; margin-top: 15px; }
+        .active { background: orange !important; color: black; }
 
         /* تأثير عند الضغط */
         .btn:active { transform: scale(0.9); }
@@ -42,6 +43,8 @@
             { name: "الريان", image: "images/al_rayan.png", link: "al_rayan.html" },
             { name: "برشلونة", image: "images/barcelona.png", link: "barcelona.html" }
         ];
+
+        const abilities = ["مهاجم", "جناح", "وسط", "مدافع", "حارس"];
 
         function updateTeamStats() {
             const statsContainer = document.getElementById("team-stats");
@@ -71,7 +74,7 @@
                         <tr>
                             <th>⚽ الأهداف المسجلة</th>
                             <td id="${team.name}_goalsFor_s6_7">${goalsFor}</td>
-                            <th>🥅 الأهداف المستقبلة</th>
+                            <th>🥅 الأهداف عليه</th>
                             <td id="${team.name}_goalsAgainst_s6_7">${goalsAgainst}</td>
                             <th>🧤 التصديات</th>
                             <td id="${team.name}_saves_s6_7">${saves}</td>
@@ -95,10 +98,29 @@
                         <button class="btn remove-btn" onclick="modifyStat('${team.name}', '_shots_s6_7', -1, 0)">- تسديدة</button>
                     </div>
 
+                    <h3>🛡 القدرات الخاصة</h3>
+                    <button class="btn add-btn" id="${team.name}_shot3_s6_7" onclick="toggleAbility('${team.name}', 'shot3')">⚡ تسديدة بـ3 أهداف</button>
+                    <button class="btn add-btn" id="${team.name}_save2_s6_7" onclick="toggleAbility('${team.name}', 'save2')">🧤 تصدي بـ2</button>
+
+                    <h3>🔄 القدرة المضاعفة</h3>
+                    ${abilities.map(ability => `
+                        <button class="btn add-btn" id="${team.name}_${ability}_s6_7" onclick="toggleAbility('${team.name}', '${ability}')">
+                            ${ability.charAt(0).toUpperCase() + ability.slice(1)}
+                        </button>
+                    `).join("")}
+
                     <a href="${team.link}"><button class="team-btn">🔍 عرض صفحة الفريق</button></a>
                 `;
                 statsContainer.appendChild(teamDiv);
+
+                updateAbilityButtons(team.name);
             });
+        }
+
+        function toggleAbility(team, ability) {
+            let status = JSON.parse(localStorage.getItem(team + "_" + ability + "_s6_7")) || false;
+            localStorage.setItem(team + "_" + ability + "_s6_7", JSON.stringify(!status));
+            updateAbilityButtons(team);
         }
 
         function modifyStat(team, stat, amount, scoreChange) {
@@ -115,8 +137,23 @@
             }
         }
 
+
+        function updateAbilityButtons(team) {
+            ["shot3", "save2", ...abilities].forEach(ability => {
+                let button = document.getElementById(`${team}_${ability}_s6_7`);
+                if (button) {
+                    let status = JSON.parse(localStorage.getItem(team + "_" + ability + "_s6_7")) || false;
+                    button.classList.toggle("active", status);
+                }
+            });
+        }
+
         function resetAllScores() {
-            teams.forEach(team => localStorage.clear());
+            teams.forEach(team => {
+                ["shot3", "save2", ...abilities].forEach(ability => {
+                    localStorage.setItem(team.name + "_" + ability + "_s6_7", JSON.stringify(false));
+                });
+            });
             updateTeamStats();
         }
 
