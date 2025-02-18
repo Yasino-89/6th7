@@ -6,10 +6,27 @@
     <title>صفحة الفريق</title>
     <style>
         body { font-family: Arial, sans-serif; direction: rtl; text-align: center; background-color: #f4f4f4; }
-        .container { max-width: 500px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; padding: 20px; }
-        .buttons { display: grid; grid-template-columns: repeat(5, 1fr); gap: 10px; margin: 10px 0; }
-        button { padding: 10px; background: #007BFF; color: white; border: none; cursor: pointer; border-radius: 5px; font-size: 18px; transition: 0.3s; }
-        button.selected { background: #28A745 !important; color: white; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
+        .team-section { display: flex; justify-content: space-between; align-items: center; gap: 20px; margin-top: 20px; }
+        .team-image { width: 400px; height: auto; border-radius: 10px; }
+        .selection-container { flex: 1; text-align: center; }
+        .buttons { display: grid; grid-template-columns: repeat(1, 1fr); gap: 10px; margin: 10px 0; }
+        .buttons button { 
+            padding: 10px; 
+            background: #007BFF; 
+            color: white; 
+            border: none; 
+            cursor: pointer; 
+            border-radius: 5px; 
+            font-size: 18px; 
+            transition: 0.3s ease-in-out;
+        }
+        .buttons button.selected { 
+            background: #28A745 !important; /* تغيير اللون عند الاختيار */
+            color: white; 
+            transform: scale(1.1); /* تكبير الزر قليلاً */
+            box-shadow: 0 0 10px rgba(40, 167, 69, 0.7); /* تأثير توهج */
+        }
         .reset { background: red; }
         .stats { text-align: center; margin-top: 20px; }
         .stats p { font-size: 18px; margin: 5px; }
@@ -19,21 +36,26 @@
 
     <div class="container">
         <h1 id="team-name"></h1>
-        
-        <h2>النقاط: <span id="team-score">0</span></h2>
-        <div class="stats">
-            <p>🏆 الأهداف التي له: <span id="goalsFor">0</span></p>
-            <p>⚽ الأهداف التي عليه: <span id="goalsAgainst">0</span></p>
-            <p>🧤 التصديات: <span id="saves">0</span></p>
+
+        <!-- قسم الفريق -->
+        <div class="team-section">
+            <!-- اختيارات الحارس -->
+            <div class="selection-container">
+                <h2>اختيارات الحارس </h2>
+                <div class="buttons" id="goalkeeperButtons"></div>
+                <p>اختيارات الحارس: <span id="selectedSaves">لا يوجد</span></p>
+            </div>
+
+            <!-- صورة الفريق -->
+            <img id="team-image" class="team-image" src="" alt="شعار الفريق">
+
+            <!-- اختيارات المدافع -->
+            <div class="selection-container">
+                <h2>اختيارات المدافع</h2>
+                <div class="buttons" id="defenderButtons"></div>
+                <p>اختيارات المدافع: <span id="selectedDefense">لا يوجد</span></p>
+            </div>
         </div>
-
-        <h2>اختيارات الحارس (يمكن اختيار 4 أرقام)</h2>
-        <div class="buttons" id="goalkeeperButtons"></div>
-        <p>اختيارات الحارس: <span id="selectedSaves">لا يوجد</span></p>
-
-        <h2>اختيارات المدافع (يمكن اختيار 4 أرقام)</h2>
-        <div class="buttons" id="defenderButtons"></div>
-        <p>اختيارات المدافع: <span id="selectedDefense">لا يوجد</span></p>
 
         <h2>اختر الفريق المهاجم</h2>
         <select id="attackingTeam">
@@ -51,23 +73,26 @@
         <button class="reset" onclick="resetChoices()">🔄 إعادة تعيين الاختيارات</button>
         <br><br>
         <a href="index.html"><button style="background: red;">🏠 العودة إلى الصفحة الرئيسية</button></a>
+
+        <h2>⚽ نتيجة التسديدة: <span id="shotResult">لم يتم التسديد بعد</span></h2>
     </div>
 
     <script>
         const pageMap = {
-            "real_madrid_s6_4.html": "ريال مدريد",
-            "liverpool_s6_4.html": "ليفربول",
-            "al_hilal_s6_4.html": "الهلال"
+            "real_madrid_s6_4.html": { name: "ريال مدريد", image: "images/real_madrid.png" },
+            "liverpool_s6_4.html": { name: "ليفربول", image: "images/liverpool.png" },
+            "al_hilal_s6_4.html": { name: "الهلال", image: "images/alhilal.png" }
         };
 
         const filename = location.pathname.split("/").pop();
-        const teamName = pageMap[filename] || "ليفربول";
+        const teamInfo = pageMap[filename] || { name: "", image: "images/1.png" };
 
-        document.title = document.getElementById("team-name").innerText = teamName;
+        document.title = document.getElementById("team-name").innerText = teamInfo.name;
+        document.getElementById("team-image").src = teamInfo.image;
 
-        let selectedNumbers = JSON.parse(localStorage.getItem(teamName + "_goalkeeper_s6_4")) || [];
-        let selectedDefenderNumbers = JSON.parse(localStorage.getItem(teamName + "_defender_s6_4")) || [];
-        let attackerChoice = JSON.parse(localStorage.getItem(teamName + "_attacker_s6_4")) || null;
+        let selectedNumbers = JSON.parse(localStorage.getItem(teamInfo.name + "_goalkeeper_s6_4")) || [];
+        let selectedDefenderNumbers = JSON.parse(localStorage.getItem(teamInfo.name + "_defender_s6_4")) || [];
+        let attackerChoice = JSON.parse(localStorage.getItem(teamInfo.name + "_attacker_s6_4")) || null;
 
         function updateDisplay() {
             document.getElementById("selectedSaves").innerText = selectedNumbers.length ? selectedNumbers.join(", ") : "لا يوجد";
@@ -77,15 +102,18 @@
             document.querySelectorAll(".buttons button").forEach(btn => btn.classList.remove("selected"));
 
             selectedNumbers.forEach(num => {
-                document.querySelector(`#goalkeeperButtons button[data-num="${num}"]`).classList.add("selected");
+                let btn = document.querySelector(`#goalkeeperButtons button:nth-child(${num})`);
+                if (btn) btn.classList.add("selected");
             });
 
             selectedDefenderNumbers.forEach(num => {
-                document.querySelector(`#defenderButtons button[data-num="${num}"]`).classList.add("selected");
+                let btn = document.querySelector(`#defenderButtons button:nth-child(${num})`);
+                if (btn) btn.classList.add("selected");
             });
 
             if (attackerChoice !== null) {
-                document.querySelector(`#attackerButtons button[data-num="${attackerChoice}"]`).classList.add("selected");
+                let btn = document.querySelector(`#attackerButtons button:nth-child(${attackerChoice})`);
+                if (btn) btn.classList.add("selected");
             }
         }
 
@@ -96,36 +124,56 @@
                 } else if (selectedNumbers.length < 4) {
                     selectedNumbers.push(number);
                 }
-                localStorage.setItem(teamName + "_goalkeeper_s6_4", JSON.stringify(selectedNumbers));
+                localStorage.setItem(teamInfo.name + "_goalkeeper_s6_4", JSON.stringify(selectedNumbers));
             } else if (type === "defender") {
                 if (selectedDefenderNumbers.includes(number)) {
                     selectedDefenderNumbers = selectedDefenderNumbers.filter(n => n !== number);
                 } else if (selectedDefenderNumbers.length < 4) {
                     selectedDefenderNumbers.push(number);
                 }
-                localStorage.setItem(teamName + "_defender_s6_4", JSON.stringify(selectedDefenderNumbers));
+                localStorage.setItem(teamInfo.name + "_defender_s6_4", JSON.stringify(selectedDefenderNumbers));
             } else if (type === "attacker") {
                 attackerChoice = number;
-                localStorage.setItem(teamName + "_attacker_s6_4", JSON.stringify(attackerChoice));
+                localStorage.setItem(teamInfo.name + "_attacker_s6_4", JSON.stringify(attackerChoice));
             }
             updateDisplay();
+        }
+
+        function processShot() {
+            let attackingTeam = document.getElementById("attackingTeam").value;
+            if (!attackingTeam || attackerChoice === null) {
+                alert("يرجى اختيار الفريق المهاجم ورقم التسديد!");
+                return;
+            }
+
+            let resultMessage = "";
+            if (selectedNumbers.includes(attackerChoice)) {
+                resultMessage = "🧤 تصدي رائع من الحارس!";
+            } else if (selectedDefenderNumbers.includes(attackerChoice)) {
+                resultMessage = "⚽ هجمة مرتدة! الفريق المدافع سجل هدفًا!";
+            } else {
+                resultMessage = "⚽ هدف! الفريق المهاجم سجل هدفًا!";
+            }
+
+            document.getElementById("shotResult").innerText = resultMessage;
         }
 
         function resetChoices() {
             selectedNumbers = [];
             selectedDefenderNumbers = [];
             attackerChoice = null;
-            localStorage.removeItem(teamName + "_goalkeeper_s6_4");
-            localStorage.removeItem(teamName + "_defender_s6_4");
-            localStorage.removeItem(teamName + "_attacker_s6_4");
+            localStorage.removeItem(teamInfo.name + "_goalkeeper_s6_4");
+            localStorage.removeItem(teamInfo.name + "_defender_s6_4");
+            localStorage.removeItem(teamInfo.name + "_attacker_s6_4");
+            document.getElementById("shotResult").innerText = "لم يتم التسديد بعد";
             updateDisplay();
         }
 
         function generateButtons() {
             for (let i = 1; i <= 10; i++) {
-                document.getElementById("goalkeeperButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'goalkeeper')">${i}</button>`;
-                document.getElementById("defenderButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'defender')">${i}</button>`;
-                document.getElementById("attackerButtons").innerHTML += `<button data-num="${i}" onclick="toggleSelection(${i}, 'attacker')">${i}</button>`;
+                document.getElementById("goalkeeperButtons").innerHTML += `<button onclick="toggleSelection(${i}, 'goalkeeper')">${i}</button>`;
+                document.getElementById("defenderButtons").innerHTML += `<button onclick="toggleSelection(${i}, 'defender')">${i}</button>`;
+                document.getElementById("attackerButtons").innerHTML += `<button onclick="toggleSelection(${i}, 'attacker')">${i}</button>`;
             }
             updateDisplay();
         }
