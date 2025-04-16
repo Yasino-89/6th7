@@ -4,115 +4,593 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>نقاط الطلاب - سادس 7</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body { font-family: Arial, sans-serif; direction: rtl; text-align: center; background-color: #f4f4f4; }
-        .container { max-width: 1500px; margin: 20px auto; padding: 20px; background: white; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); border-radius: 10px; }
-        .student-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 15px; text-align: center; }
-        .student-box { padding: 10px; background: #ddd; border-radius: 5px; box-shadow: 2px 2px 5px rgba(0,0,0,0.1); transition: 0.3s; position: relative; }
-        .student-box img { width: 160px; height: 230px; margin-bottom: 5px; } /* الصورة بحجم أكبر وبدون إطار */
-        .stats { font-size: 16px; margin-top: 5px; }
-        .btn { padding: 8px; margin: 3px; border: none; cursor: pointer; border-radius: 5px; font-size: 14px; width: 40%; transition: transform 0.1s, background 0.2s; }
-        .add-btn { background: green; color: white; }
-        .remove-btn { background: red; }
-        .warning-btn { background: orange; color: white; }
-        .good-btn { background: blue; color: white; }
-        .reset-btn { background: darkred; color: white; width: 100%; padding: 10px; margin-top: 15px; }
-
-        /* تأثير عند الضغط على الأزرار */
-        .btn:active { transform: scale(0.9); }
-
-        /* تأثير الوميض عند تحديث القيم */
-        .highlight { animation: flash 0.5s; }
-
+        :root {
+            --primary-color: #3498db;
+            --secondary-color: #2ecc71;
+            --warning-color: #e74c3c;
+            --good-color: #f39c12;
+            --dark-color: #2c3e50;
+            --light-color: #ecf0f1;
+            --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            font-family: 'Tajawal', Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+            color: var(--dark-color);
+        }
+        
+        .container {
+            max-width: 1500px;
+            margin: 20px auto;
+            padding: 30px;
+            background: white;
+            box-shadow: var(--shadow);
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 100%;
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+        
+        h1 {
+            color: var(--dark-color);
+            margin-bottom: 30px;
+            position: relative;
+            display: inline-block;
+        }
+        
+        h1::after {
+            content: "";
+            position: absolute;
+            bottom: -10px;
+            right: 0;
+            width: 50%;
+            height: 3px;
+            background: var(--primary-color);
+            border-radius: 3px;
+        }
+        
+        .student-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+        
+        .student-box {
+            padding: 15px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+            border: 1px solid #eee;
+        }
+        
+        .student-box:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+        }
+        
+        .student-box::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 5px;
+            height: 100%;
+            background: var(--primary-color);
+            transition: var(--transition);
+        }
+        
+        .student-box:hover::before {
+            width: 8px;
+            background: var(--secondary-color);
+        }
+        
+        .student-box img {
+            width: 120px;
+            height: 160px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            border: 3px solid white;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+        }
+        
+        .student-box:hover img {
+            transform: scale(1.05);
+            border-color: var(--primary-color);
+        }
+        
+        .student-name {
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--dark-color);
+            font-size: 16px;
+        }
+        
+        .stats {
+            font-size: 14px;
+            margin: 8px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 10px;
+        }
+        
+        .stats i {
+            margin-left: 5px;
+        }
+        
+        .stats-value {
+            font-weight: bold;
+        }
+        
+        .btn-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+        
+        .btn {
+            padding: 8px 12px;
+            border: none;
+            cursor: pointer;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: var(--transition);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex: 1;
+            min-width: 80px;
+            box-shadow: var(--shadow);
+        }
+        
+        .btn i {
+            margin-left: 5px;
+        }
+        
+        .add-btn {
+            background: var(--secondary-color);
+            color: white;
+        }
+        
+        .add-btn:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+        }
+        
+        .remove-btn {
+            background: var(--warning-color);
+            color: white;
+        }
+        
+        .remove-btn:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+        
+        .warning-btn {
+            background: #e67e22;
+            color: white;
+        }
+        
+        .warning-btn:hover {
+            background: #d35400;
+            transform: translateY(-2px);
+        }
+        
+        .good-btn {
+            background: #9b59b6;
+            color: white;
+        }
+        
+        .good-btn:hover {
+            background: #8e44ad;
+            transform: translateY(-2px);
+        }
+        
+        .reset-btn {
+            background: var(--dark-color);
+            color: white;
+            width: 100%;
+            padding: 12px;
+            margin-top: 30px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: var(--transition);
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .reset-btn i {
+            margin-left: 8px;
+        }
+        
+        .reset-btn:hover {
+            background: #1a252f;
+            transform: translateY(-2px);
+        }
+        
+        /* تأثيرات الحركة */
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
         @keyframes flash {
-            0% { background-color: yellow; }
+            0% { background-color: rgba(255, 255, 0, 0.5); }
             100% { background-color: transparent; }
+        }
+        
+        .highlight {
+            animation: flash 0.5s;
+        }
+        
+        .bounce-effect {
+            animation: bounce 0.5s;
+        }
+        
+        .pulse-effect {
+            animation: pulse 0.5s;
+        }
+        
+        /* تأثيرات النجوم للإحسان */
+        .star-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .star {
+            position: absolute;
+            color: gold;
+            font-size: 20px;
+            animation: star-fall 1s forwards;
+            opacity: 0;
+        }
+        
+        @keyframes star-fall {
+            0% { transform: translateY(-50px) rotate(0deg); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(50px) rotate(360deg); opacity: 0; }
+        }
+        
+        /* تأثيرات التحذير */
+        .warning-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .warning-symbol {
+            position: absolute;
+            color: var(--warning-color);
+            font-size: 20px;
+            animation: warning-pulse 0.5s forwards;
+            opacity: 0;
+        }
+        
+        @keyframes warning-pulse {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: scale(1.5); opacity: 0; }
+        }
+        
+        /* تأثيرات النقاط الإيجابية */
+        .point-effect {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            right: 0;
+            pointer-events: none;
+            z-index: 10;
+        }
+        
+        .point {
+            position: absolute;
+            color: var(--secondary-color);
+            font-size: 20px;
+            animation: point-rise 1s forwards;
+            opacity: 0;
+        }
+        
+        @keyframes point-rise {
+            0% { transform: translateY(0); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-50px); opacity: 0; }
+        }
+        
+        /* شريط التقدم */
+        .progress-container {
+            width: 100%;
+            background-color: #f1f1f1;
+            border-radius: 10px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+        
+        .progress-bar {
+            height: 10px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            width: 0;
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        /* تأثيرات للشاشات الصغيرة */
+        @media (max-width: 768px) {
+            .student-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+            
+            .student-box img {
+                width: 100px;
+                height: 140px;
+            }
+            
+            .btn {
+                padding: 6px 8px;
+                font-size: 12px;
+                min-width: 60px;
+            }
         }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>نقاط الطلاب - سادس 7</h1>
+        <h1><i class="fas fa-trophy"></i> نقاط الطلاب - سادس 7</h1>
+        
+        <div class="progress-container">
+            <div class="progress-bar" id="class-progress"></div>
+        </div>
+        
         <div class="student-grid" id="student-list"></div>
 
-        <button class="reset-btn" onclick="resetAllScores()">🔄 إعادة تعيين جميع النقاط</button>
+        <button class="reset-btn" onclick="resetAllScores()">
+            <i class="fas fa-sync-alt"></i> إعادة تعيين جميع النقاط
+        </button>
     </div>
 
     <!-- تحميل المؤثرات الصوتية -->
-    <audio id="success-sound" src="success.mp3"></audio>
-    <audio id="error-sound" src="error.mp3"></audio>
-    <audio id="warning-sound" src="warning.mp3"></audio>
-    <audio id="good-sound" src="good.mp3"></audio>
+    <audio id="success-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3"></audio>
+    <audio id="error-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-wrong-answer-fail-notification-946.mp3"></audio>
+    <audio id="warning-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-alarm-digital-clock-beep-989.mp3"></audio>
+    <audio id="good-sound" src="https://assets.mixkit.co/sfx/preview/mixkit-magic-marimba-notification-235.mp3"></audio>
 
     <script>
         const students = [
-            { name: "أبوبكر عبدالله بير محمد", image: "images/student1.jpg" },
-            { name: "حمد عبدالله مطيع عبدالله الاحبابى", image: "images/student2.jpg" },
-            { name: "حمد محمد هاشم", image: "images/student3.jpg" },
-            { name: "حمدان مبارك محمد على حيدان", image: "images/student4.jpg" },
-            { name: "خالد حمد راشد الزكيبا المرى", image: "images/student5.jpg" },
-            { name: "خالد على راشد على القاشوطى", image: "images/student6.jpg" },
-            { name: "خالد محمد هادى محمد انديله", image: "images/student7.jpg" },
-            { name: "خليفه جان", image: "images/student8.jpg" },
-            { name: "خليفه زايد هادف محسن الحسناوى", image: "images/student9.jpg" },
-            { name: "سعود عبدالله مطيع عبدالله الاحبابى", image: "images/student10.jpg" },
-            { name: "سعيد سالم على محمد النابت", image: "images/student11.jpg" },
-            { name: "سعيد ناصر على محمد بخيته", image: "images/student12.jpg" },
-            { name: "عبدالعزيز محبوب جول جنان", image: "images/student13.jpg" },
-            { name: "عبدالعزيز محمد فرج النابت المرى", image: "images/student14.jpg" },
-            { name: "عبدالعزيز سالم الحبابي", image: "images/student15.jpg" },
-            { name: "عبدالله سالم الحبابي", image: "images/student16.jpg" },
-            { name: "علي خالد عبدالهادي مثيب المرى", image: "images/student17.jpg" },
-            { name: "محمد اسحاق", image: "images/student18.jpg" },
-            { name: "محمد سالم على الجربوعى المرى", image: "images/student19.jpg" },
-            { name: "محمد ناصر محمد ال شنان الحبابى", image: "images/student20.jpg" },
-            { name: "يوسف محمد دانى بخش", image: "images/student21.jpg" }
+            { name: "أبوبكر عبدالله بير محمد", image: "https://via.placeholder.com/120x160/3498db/ffffff?text=طالب" },
+            { name: "حمد عبدالله مطيع عبدالله الاحبابى", image: "https://via.placeholder.com/120x160/2ecc71/ffffff?text=طالب" },
+            { name: "حمد محمد هاشم", image: "https://via.placeholder.com/120x160/e74c3c/ffffff?text=طالب" },
+            { name: "حمدان مبارك محمد على حيدان", image: "https://via.placeholder.com/120x160/f39c12/ffffff?text=طالب" },
+            { name: "خالد حمد راشد الزكيبا المرى", image: "https://via.placeholder.com/120x160/9b59b6/ffffff?text=طالب" },
+            { name: "خالد على راشد على القاشوطى", image: "https://via.placeholder.com/120x160/1abc9c/ffffff?text=طالب" },
+            { name: "خالد محمد هادى محمد انديله", image: "https://via.placeholder.com/120x160/34495e/ffffff?text=طالب" },
+            { name: "خليفه جان", image: "https://via.placeholder.com/120x160/e67e22/ffffff?text=طالب" },
+            { name: "خليفه زايد هادف محسن الحسناوى", image: "https://via.placeholder.com/120x160/27ae60/ffffff?text=طالب" },
+            { name: "سعود عبدالله مطيع عبدالله الاحبابى", image: "https://via.placeholder.com/120x160/2980b9/ffffff?text=طالب" },
+            { name: "سعيد سالم على محمد النابت", image: "https://via.placeholder.com/120x160/16a085/ffffff?text=طالب" },
+            { name: "سعيد ناصر على محمد بخيته", image: "https://via.placeholder.com/120x160/c0392b/ffffff?text=طالب" },
+            { name: "عبدالعزيز محبوب جول جنان", image: "https://via.placeholder.com/120x160/d35400/ffffff?text=طالب" },
+            { name: "عبدالعزيز محمد فرج النابت المرى", image: "https://via.placeholder.com/120x160/8e44ad/ffffff?text=طالب" },
+            { name: "عبدالعزيز سالم الحبابي", image: "https://via.placeholder.com/120x160/2c3e50/ffffff?text=طالب" },
+            { name: "عبدالله سالم الحبابي", image: "https://via.placeholder.com/120x160/f1c40f/ffffff?text=طالب" },
+            { name: "علي خالد عبدالهادي مثيب المرى", image: "https://via.placeholder.com/120x160/e74c3c/ffffff?text=طالب" },
+            { name: "محمد اسحاق", image: "https://via.placeholder.com/120x160/3498db/ffffff?text=طالب" },
+            { name: "محمد سالم على الجربوعى المرى", image: "https://via.placeholder.com/120x160/2ecc71/ffffff?text=طالب" },
+            { name: "محمد ناصر محمد ال شنان الحبابى", image: "https://via.placeholder.com/120x160/e74c3c/ffffff?text=طالب" },
+            { name: "يوسف محمد دانى بخش", image: "https://via.placeholder.com/120x160/f39c12/ffffff?text=طالب" }
         ];
 
         function updateStudentList() {
             const listContainer = document.getElementById("student-list");
             listContainer.innerHTML = "";
 
+            let totalPoints = 0;
+            let maxPossiblePoints = students.length * 10; // افتراضي لأغراض العرض
+
             students.forEach(student => {
                 let score = JSON.parse(localStorage.getItem(student.name + "_score_s6_7")) || 0;
                 let warnings = JSON.parse(localStorage.getItem(student.name + "_warnings_s6_7")) || 0;
                 let goodBehavior = JSON.parse(localStorage.getItem(student.name + "_good_s6_7")) || 0;
+                
+                totalPoints += score;
 
                 let studentDiv = document.createElement("div");
                 studentDiv.className = "student-box";
                 studentDiv.innerHTML = `
                     <img src="${student.image}" alt="صورة الطالب">
-                    <p class="stats">🏆 النقاط: <strong id="${student.name}_score">${score}</strong></p>
-                    <p class="stats">⚠️ المخالفات: <strong id="${student.name}_warnings">${warnings}</strong></p>
-                    <p class="stats">🌟 احسان: <strong id="${student.name}_good">${goodBehavior}</strong></p>
-
-                    <button class="btn add-btn" onclick="modifyScore('${student.name}', '_score_s6_7', 1, 'success-sound')">+ نقطة</button>
-                    <button class="btn remove-btn" onclick="modifyScore('${student.name}', '_score_s6_7', -1, 'error-sound')">- نقطة</button>
-                    <button class="btn warning-btn" onclick="modifyScore('${student.name}', '_warnings_s6_7', 1, 'warning-sound')">⚠️ مخالفة</button>
-                    <button class="btn good-btn" onclick="modifyScore('${student.name}', '_good_s6_7', 1, 'good-sound')">🌟 احسان</button>
+                    <div class="student-name">${student.name}</div>
+                    
+                    <div class="stats">
+                        <span><i class="fas fa-trophy"></i> النقاط:</span>
+                        <span class="stats-value" id="${student.name}_score">${score}</span>
+                    </div>
+                    
+                    <div class="stats">
+                        <span><i class="fas fa-exclamation-triangle"></i> المخالفات:</span>
+                        <span class="stats-value" id="${student.name}_warnings">${warnings}</span>
+                    </div>
+                    
+                    <div class="stats">
+                        <span><i class="fas fa-star"></i> إحسان:</span>
+                        <span class="stats-value" id="${student.name}_good">${goodBehavior}</span>
+                    </div>
+                    
+                    <div class="btn-container">
+                        <button class="btn add-btn" onclick="modifyScore('${student.name}', '_score_s6_7', 1, 'success-sound', this.parentElement.parentElement, 'point')">
+                            <i class="fas fa-plus"></i> نقطة
+                        </button>
+                        <button class="btn remove-btn" onclick="modifyScore('${student.name}', '_score_s6_7', -1, 'error-sound', this.parentElement.parentElement, 'bounce')">
+                            <i class="fas fa-minus"></i> نقطة
+                        </button>
+                        <button class="btn warning-btn" onclick="modifyScore('${student.name}', '_warnings_s6_7', 1, 'warning-sound', this.parentElement.parentElement, 'warning')">
+                            <i class="fas fa-exclamation"></i> مخالفة
+                        </button>
+                        <button class="btn good-btn" onclick="modifyScore('${student.name}', '_good_s6_7', 1, 'good-sound', this.parentElement.parentElement, 'star')">
+                            <i class="fas fa-star"></i> إحسان
+                        </button>
+                    </div>
                 `;
                 listContainer.appendChild(studentDiv);
             });
+
+            // تحديث شريط التقدم
+            const progressPercentage = Math.min(100, (totalPoints / maxPossiblePoints) * 100);
+            document.getElementById("class-progress").style.width = `${progressPercentage}%`;
         }
 
-        function modifyScore(student, key, amount, soundId) {
+        function createEffect(container, type) {
+            const effectDiv = document.createElement("div");
+            effectDiv.className = `${type}-effect`;
+            container.appendChild(effectDiv);
+            
+            const colors = {
+                star: ["gold", "#FFD700", "#FFEE58"],
+                warning: ["#e74c3c", "#c0392b", "#ff6b6b"],
+                point: ["#2ecc71", "#27ae60", "#1abc9c"]
+            };
+            
+            const symbols = {
+                star: ["★", "⭐", "✪"],
+                warning: ["⚠", "❗", "❕"],
+                point: ["+1", "↑", "👍"]
+            };
+            
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const element = document.createElement("div");
+                    element.className = type;
+                    element.textContent = symbols[type][Math.floor(Math.random() * symbols[type].length)];
+                    element.style.color = colors[type][Math.floor(Math.random() * colors[type].length)];
+                    element.style.right = `${Math.random() * 80 + 10}%`;
+                    effectDiv.appendChild(element);
+                    
+                    setTimeout(() => {
+                        element.remove();
+                    }, 1000);
+                }, i * 100);
+            }
+            
+            setTimeout(() => {
+                effectDiv.remove();
+            }, 1500);
+        }
+
+        function modifyScore(student, key, amount, soundId, container, effectType) {
             let fieldKey = student + key;
             let currentValue = JSON.parse(localStorage.getItem(fieldKey)) || 0;
             currentValue += amount;
+            
+            // التأكد من أن القيم لا تكون سالبة
+            if (currentValue < 0) currentValue = 0;
+            
             localStorage.setItem(fieldKey, JSON.stringify(currentValue));
-            document.getElementById(student + key.replace("_s6_7", "")).innerText = currentValue;
-            document.getElementById(soundId).play();
+            
+            // إضافة تأثير مرئي
+            const element = document.getElementById(student + key.replace("_s6_7", ""));
+            element.textContent = currentValue;
+            element.classList.add("highlight");
+            
+            // إضافة تأثيرات خاصة
+            if (effectType) {
+                createEffect(container, effectType);
+                container.classList.add("pulse-effect");
+                setTimeout(() => {
+                    container.classList.remove("pulse-effect");
+                }, 500);
+            }
+            
+            // تشغيل الصوت
+            const sound = document.getElementById(soundId);
+            sound.currentTime = 0;
+            sound.play();
+            
+            // تحديث القائمة لإظهار التغيرات
+            setTimeout(updateStudentList, 300);
         }
 
         function resetAllScores() {
-            if (confirm("هل أنت متأكد من إعادة تعيين جميع البيانات؟")) {
-                students.forEach(student => localStorage.clear());
+            if (confirm("هل أنت متأكد من إعادة تعيين جميع البيانات؟ سيتم حذف جميع النقاط والمخالفات والإحسانات!")) {
+                students.forEach(student => {
+                    localStorage.removeItem(student.name + "_score_s6_7");
+                    localStorage.removeItem(student.name + "_warnings_s6_7");
+                    localStorage.removeItem(student.name + "_good_s6_7");
+                });
+                
+                // تأثير عند إعادة التعيين
+                const container = document.querySelector(".container");
+                container.classList.add("pulse-effect");
+                setTimeout(() => {
+                    container.classList.remove("pulse-effect");
+                }, 1000);
+                
                 updateStudentList();
             }
         }
 
-        updateStudentList();
+        // تحميل الخط العربي
+        const link = document.createElement("link");
+        link.href = "https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700&display=swap";
+        link.rel = "stylesheet";
+        document.head.appendChild(link);
+
+        // تهيئة الصفحة
+        document.addEventListener("DOMContentLoaded", () => {
+            updateStudentList();
+            
+            // تأثير عند فتح الصفحة
+            setTimeout(() => {
+                document.querySelector(".container").classList.add("pulse-effect");
+                setTimeout(() => {
+                    document.querySelector(".container").classList.remove("pulse-effect");
+                }, 1000);
+            }, 500);
+        });
     </script>
 
 </body>
