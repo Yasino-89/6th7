@@ -122,13 +122,6 @@
             border-color: var(--primary-color);
         }
         
-        .student-name {
-            font-weight: bold;
-            margin: 10px 0;
-            color: var(--dark-color);
-            font-size: 16px;
-        }
-        
         .stats {
             font-size: 14px;
             margin: 8px 0;
@@ -256,16 +249,46 @@
             100% { background-color: transparent; }
         }
         
+        @keyframes warningFlash {
+            0%, 100% { background-color: transparent; box-shadow: none; }
+            25%, 75% { background-color: rgba(231, 76, 60, 0.2); box-shadow: 0 0 10px rgba(231, 76, 60, 0.5); }
+            50% { background-color: rgba(231, 76, 60, 0.3); box-shadow: 0 0 15px rgba(231, 76, 60, 0.7); }
+        }
+        
+        @keyframes successFlash {
+            0%, 100% { background-color: transparent; box-shadow: none; }
+            25%, 75% { background-color: rgba(46, 204, 113, 0.2); box-shadow: 0 0 10px rgba(46, 204, 113, 0.5); }
+            50% { background-color: rgba(46, 204, 113, 0.3); box-shadow: 0 0 15px rgba(46, 204, 113, 0.7); }
+        }
+        
+        @keyframes goodFlash {
+            0%, 100% { background-color: transparent; box-shadow: none; }
+            25%, 75% { background-color: rgba(155, 89, 182, 0.2); box-shadow: 0 0 10px rgba(155, 89, 182, 0.5); }
+            50% { background-color: rgba(155, 89, 182, 0.3); box-shadow: 0 0 15px rgba(155, 89, 182, 0.7); }
+        }
+        
         .highlight {
-            animation: flash 0.5s;
+            animation: flash 3s;
         }
         
         .bounce-effect {
-            animation: bounce 0.5s;
+            animation: bounce 2s;
         }
         
         .pulse-effect {
-            animation: pulse 0.5s;
+            animation: pulse 2s;
+        }
+        
+        .warning-effect {
+            animation: warningFlash 8s 3;
+        }
+        
+        .success-effect {
+            animation: successFlash 8s 3;
+        }
+        
+        .good-effect {
+            animation: goodFlash 8s 3;
         }
         
         /* تأثيرات النجوم للإحسان */
@@ -294,7 +317,7 @@
         }
         
         /* تأثيرات التحذير */
-        .warning-effect {
+        .warning-symbol-effect {
             position: absolute;
             width: 100%;
             height: 100%;
@@ -403,28 +426,40 @@
 
     <script>
         const students = [
-            { name: "", image: "images/student1.jpg" },
-            { name: "", image: "images/student2.jpg" },
-            { name: "", image: "images/student3.jpg" },
-            { name: "", image: "images/student4.jpg" },
-            { name: "", image: "images/student5.jpg" },
-            { name: "", image: "images/student6.jpg" },
-            { name: "", image: "images/student7.jpg" },
-            { name: "", image: "images/student8.jpg" },
-            { name: "", image: "images/student9.jpg" },
-            { name: "", image: "images/student10.jpg" },
-            { name: "", image: "images/student11.jpg" },
-            { name: "", image: "images/student12.jpg" },
-            { name: "", image: "images/student13.jpg" },
-            { name: "", image: "images/student14.jpg" },
-            { name: "", image: "images/student15.jpg" },
-            { name: "", image: "images/student16.jpg" },
-            { name: "", image: "images/student17.jpg" },
-            { name: "", image: "images/student18.jpg" },
-            { name: "", image: "images/student19.jpg" },
-            { name: "", image: "images/student20.jpg" },
-            { name: "", image: "images/student21.jpg" }
+            { id: 1, name: "سعود عبدالله", image: "images/student1.jpg" },
+            { id: 2, name: "سعيد ناصر", image: "images/student2.jpg" },
+            { id: 3, name: "حمدان", image: "images/student3.jpg" },
+            { id: 4, name: "خالد حمد", image: "images/student4.jpg" },
+            { id: 5, name: "حمد عبدالله", image: "images/student5.jpg" },
+            { id: 6, name: "علي خالد", image: "images/student6.jpg" },
+            { id: 7, name: "خالد علي", image: "images/student7.jpg" },
+            { id: 8, name: "عبدالعزيز محبوب", image: "images/student8.jpg" },
+            { id: 9, name: "محمد اسحاق", image: "images/student9.jpg" },
+            { id: 10, name: "خليقة جان", image: "images/student10.jpg" },
+            { id: 11, name: "عبدالعزيز محمد", image: "images/student11.jpg" },
+            { id: 12, name: "عبدالعزيز سالم", image: "images/student12.jpg" },
+            { id: 13, name: "محمد ناصر", image: "images/student13.jpg" },
+            { id: 14, name: "سعيد سالم", image: "images/student14.jpg" },
+            { id: 15, name: "هالد انديله", image: "images/student15.jpg" },
+            { id: 16, name: "خليفة زايد", image: "images/student16.jpg" },
+            { id: 17, name: "يوسف", image: "images/student17.jpg" },
+            { id: 18, name: "أبوبكر", image: "images/student18.jpg" },
+            { id: 19, name: "محمد سالم", image: "images/student19.jpg" },
+            { id: 20, name: "حمد هاشم", image: "images/student20.jpg" },
+            { id: 21, name: "عبدالله سالم", image: "images/student21.jpg" },
+            { id: 22, name: "سعود علي", image: "images/student22.jpg" }
         ];
+
+        // تهيئة التخزين المحلي إذا لم يكن موجودًا
+        function initializeStorage() {
+            students.forEach(student => {
+                if (!localStorage.getItem(`student_${student.id}_score`)) {
+                    localStorage.setItem(`student_${student.id}_score`, '0');
+                    localStorage.setItem(`student_${student.id}_warnings`, '0');
+                    localStorage.setItem(`student_${student.id}_good`, '0');
+                }
+            });
+        }
 
         function updateStudentList() {
             const listContainer = document.getElementById("student-list");
@@ -434,44 +469,45 @@
             let maxPossiblePoints = students.length * 10; // افتراضي لأغراض العرض
 
             students.forEach(student => {
-                let score = JSON.parse(localStorage.getItem(student.name + "_score_s6_7")) || 0;
-                let warnings = JSON.parse(localStorage.getItem(student.name + "_warnings_s6_7")) || 0;
-                let goodBehavior = JSON.parse(localStorage.getItem(student.name + "_good_s6_7")) || 0;
+                let score = parseInt(localStorage.getItem(`student_${student.id}_score`)) || 0;
+                let warnings = parseInt(localStorage.getItem(`student_${student.id}_warnings`)) || 0;
+                let goodBehavior = parseInt(localStorage.getItem(`student_${student.id}_good`)) || 0;
                 
                 totalPoints += score;
 
                 let studentDiv = document.createElement("div");
                 studentDiv.className = "student-box";
+                studentDiv.id = `student-${student.id}`;
                 studentDiv.innerHTML = `
                     <img src="${student.image}" alt="صورة الطالب">
                     <div class="student-name">${student.name}</div>
                     
                     <div class="stats">
                         <span><i class="fas fa-trophy"></i> النقاط:</span>
-                        <span class="stats-value" id="${student.name}_score">${score}</span>
+                        <span class="stats-value" id="student-${student.id}-score">${score}</span>
                     </div>
                     
                     <div class="stats">
                         <span><i class="fas fa-exclamation-triangle"></i> المخالفات:</span>
-                        <span class="stats-value" id="${student.name}_warnings">${warnings}</span>
+                        <span class="stats-value" id="student-${student.id}-warnings">${warnings}</span>
                     </div>
                     
                     <div class="stats">
                         <span><i class="fas fa-star"></i> إحسان:</span>
-                        <span class="stats-value" id="${student.name}_good">${goodBehavior}</span>
+                        <span class="stats-value" id="student-${student.id}-good">${goodBehavior}</span>
                     </div>
                     
                     <div class="btn-container">
-                        <button class="btn add-btn" onclick="modifyScore('${student.name}', '_score_s6_7', 1, 'success-sound', this.parentElement.parentElement, 'point')">
+                        <button class="btn add-btn" onclick="modifyScore(${student.id}, 'score', 1, 'success-sound', 'success')">
                             <i class="fas fa-plus"></i> نقطة
                         </button>
-                        <button class="btn remove-btn" onclick="modifyScore('${student.name}', '_score_s6_7', -1, 'error-sound', this.parentElement.parentElement, 'bounce')">
+                        <button class="btn remove-btn" onclick="modifyScore(${student.id}, 'score', -1, 'error-sound', 'warning')">
                             <i class="fas fa-minus"></i> نقطة
                         </button>
-                        <button class="btn warning-btn" onclick="modifyScore('${student.name}', '_warnings_s6_7', 1, 'warning-sound', this.parentElement.parentElement, 'warning')">
+                        <button class="btn warning-btn" onclick="modifyScore(${student.id}, 'warnings', 1, 'warning-sound', 'warning')">
                             <i class="fas fa-exclamation"></i> مخالفة
                         </button>
-                        <button class="btn good-btn" onclick="modifyScore('${student.name}', '_good_s6_7', 1, 'good-sound', this.parentElement.parentElement, 'star')">
+                        <button class="btn good-btn" onclick="modifyScore(${student.id}, 'good', 1, 'good-sound', 'good')">
                             <i class="fas fa-star"></i> إحسان
                         </button>
                     </div>
@@ -484,9 +520,19 @@
             document.getElementById("class-progress").style.width = `${progressPercentage}%`;
         }
 
-        function createEffect(container, type) {
+        function createEffect(containerId, type) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            
+            // إضافة كلاس للتأثير العام
+            container.classList.add(`${type}-effect`);
+            setTimeout(() => {
+                container.classList.remove(`${type}-effect`);
+            }, 2000);
+            
+            // إنشاء تأثيرات الرسوم المتحركة
             const effectDiv = document.createElement("div");
-            effectDiv.className = `${type}-effect`;
+            effectDiv.className = `${type}-symbol-effect`;
             container.appendChild(effectDiv);
             
             const colors = {
@@ -521,29 +567,27 @@
             }, 1500);
         }
 
-        function modifyScore(student, key, amount, soundId, container, effectType) {
-            let fieldKey = student + key;
-            let currentValue = JSON.parse(localStorage.getItem(fieldKey)) || 0;
+        function modifyScore(studentId, key, amount, soundId, effectType) {
+            let currentValue = parseInt(localStorage.getItem(`student_${studentId}_${key}`)) || 0;
             currentValue += amount;
             
             // التأكد من أن القيم لا تكون سالبة
             if (currentValue < 0) currentValue = 0;
             
-            localStorage.setItem(fieldKey, JSON.stringify(currentValue));
+            localStorage.setItem(`student_${studentId}_${key}`, currentValue.toString());
             
-            // إضافة تأثير مرئي
-            const element = document.getElementById(student + key.replace("_s6_7", ""));
-            element.textContent = currentValue;
-            element.classList.add("highlight");
-            
-            // إضافة تأثيرات خاصة
-            if (effectType) {
-                createEffect(container, effectType);
-                container.classList.add("pulse-effect");
+            // تحديث القيمة المعروضة
+            const element = document.getElementById(`student-${studentId}-${key}`);
+            if (element) {
+                element.textContent = currentValue;
+                element.classList.add("highlight");
                 setTimeout(() => {
-                    container.classList.remove("pulse-effect");
+                    element.classList.remove("highlight");
                 }, 500);
             }
+            
+            // إضافة التأثير المرئي
+            createEffect(`student-${studentId}`, effectType);
             
             // تشغيل الصوت
             const sound = document.getElementById(soundId);
@@ -557,9 +601,9 @@
         function resetAllScores() {
             if (confirm("هل أنت متأكد من إعادة تعيين جميع البيانات؟ سيتم حذف جميع النقاط والمخالفات والإحسانات!")) {
                 students.forEach(student => {
-                    localStorage.removeItem(student.name + "_score_s6_7");
-                    localStorage.removeItem(student.name + "_warnings_s6_7");
-                    localStorage.removeItem(student.name + "_good_s6_7");
+                    localStorage.setItem(`student_${student.id}_score`, '0');
+                    localStorage.setItem(`student_${student.id}_warnings`, '0');
+                    localStorage.setItem(`student_${student.id}_good`, '0');
                 });
                 
                 // تأثير عند إعادة التعيين
@@ -581,6 +625,7 @@
 
         // تهيئة الصفحة
         document.addEventListener("DOMContentLoaded", () => {
+            initializeStorage();
             updateStudentList();
             
             // تأثير عند فتح الصفحة
@@ -595,3 +640,5 @@
 
 </body>
 </html>
+
+في هذا الكود
