@@ -528,7 +528,7 @@
             container.classList.add(`${type}-effect`);
             setTimeout(() => {
                 container.classList.remove(`${type}-effect`);
-            }, 3000);
+            }, 7000);
             
             // إنشاء تأثيرات الرسوم المتحركة
             const effectDiv = document.createElement("div");
@@ -558,13 +558,13 @@
                     
                     setTimeout(() => {
                         element.remove();
-                    }, 1000);
+                    }, 4000);
                 }, i * 100);
             }
             
             setTimeout(() => {
                 effectDiv.remove();
-            }, 4000);
+            }, 7000);
         }
 
         function modifyScore(studentId, key, amount, soundId, effectType) {
