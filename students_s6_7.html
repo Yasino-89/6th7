@@ -280,15 +280,15 @@
         }
         
         .warning-effect {
-            animation: warningFlash 8s 3;
+            animation: warningFlash 2s 6;
         }
         
         .success-effect {
-            animation: successFlash 8s 3;
+            animation: successFlash 2s 6;
         }
         
         .good-effect {
-            animation: goodFlash 8s 3;
+            animation: goodFlash 2s 6;
         }
         
         /* تأثيرات النجوم للإحسان */
@@ -331,7 +331,7 @@
             position: absolute;
             color: var(--warning-color);
             font-size: 20px;
-            animation: warning-pulse 0.5s forwards;
+            animation: warning-pulse 4s forwards;
             opacity: 0;
         }
         
@@ -440,7 +440,7 @@
             { id: 12, name: "عبدالعزيز سالم", image: "images/student12.jpg" },
             { id: 13, name: "محمد ناصر", image: "images/student13.jpg" },
             { id: 14, name: "سعيد سالم", image: "images/student14.jpg" },
-            { id: 15, name: "هالد انديله", image: "images/student15.jpg" },
+            { id: 15, name: "خالد انديله", image: "images/student15.jpg" },
             { id: 16, name: "خليفة زايد", image: "images/student16.jpg" },
             { id: 17, name: "يوسف", image: "images/student17.jpg" },
             { id: 18, name: "أبوبكر", image: "images/student18.jpg" },
@@ -528,7 +528,7 @@
             container.classList.add(`${type}-effect`);
             setTimeout(() => {
                 container.classList.remove(`${type}-effect`);
-            }, 2000);
+            }, 3000);
             
             // إنشاء تأثيرات الرسوم المتحركة
             const effectDiv = document.createElement("div");
@@ -564,7 +564,7 @@
             
             setTimeout(() => {
                 effectDiv.remove();
-            }, 1500);
+            }, 4000);
         }
 
         function modifyScore(studentId, key, amount, soundId, effectType) {
