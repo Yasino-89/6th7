@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ريال مدريد</title>
+    <title>صفحة الفريق</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
     <style>
         :root {
@@ -217,6 +217,7 @@
             display: inline-block;
         }
         
+        /* مؤثرات خاصة بتسجيل هدف عادي */
         .goal-effect {
             position: fixed;
             top: 0;
@@ -234,25 +235,87 @@
         .goal-text {
             font-size: 5rem;
             color: white;
-            text-shadow: 0 0 10px gold;
+            text-shadow: 0 0 20px gold;
             animation: zoomIn 0.5s, bounce 1s infinite;
         }
         
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
+        /* مؤثرات خاصة بالهجمة المرتدة */
+        .counter-effect {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.7);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            animation: fadeIn 0.5s;
         }
         
-        @keyframes zoomIn {
-            from { transform: scale(0.5); }
-            to { transform: scale(1); }
+        .counter-text {
+            font-size: 4rem;
+            color: #ff6b6b;
+            text-shadow: 0 0 15px #ff0000;
+            animation: shake 0.5s infinite;
         }
         
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
+        .counter-subtext {
+            font-size: 2rem;
+            color: white;
+            margin-top: 20px;
         }
         
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-10px); }
+            75% { transform: translateX(10px); }
+        }
+        
+        /* مؤثرات خاصة بتصدي الحارس */
+        .save-effect {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            color: white;
+            text-shadow: 0 0 15px #4cc9f0;
+            z-index: 1000;
+            animation: zoomIn 0.3s, pulseBlue 1s 0.3s infinite;
+        }
+        
+        @keyframes pulseBlue {
+            0% { text-shadow: 0 0 15px #4cc9f0; }
+            50% { text-shadow: 0 0 30px #4cc9f0; }
+            100% { text-shadow: 0 0 15px #4cc9f0; }
+        }
+        
+        /* كرات متحركة لمؤثر التصدي */
+        .ball {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: fly 2s ease-out;
+        }
+        
+        @keyframes fly {
+            0% { 
+                transform: translate(0, 0) scale(0.3);
+                opacity: 1;
+            }
+            100% { 
+                transform: translate(var(--tx), var(--ty)) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        /* مؤثرات الكونفيتي */
         .confetti {
             position: fixed;
             width: 10px;
@@ -268,20 +331,19 @@
             100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
         }
         
-        .save-effect {
-            position: fixed;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            font-size: 4rem;
-            color: white;
-            text-shadow: 0 0 10px var(--primary-color);
-            z-index: 1000;
-            animation: zoomIn 0.5s, fadeOut 1s 1s forwards;
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
         }
         
-        @keyframes fadeOut {
-            to { opacity: 0; }
+        @keyframes zoomIn {
+            from { transform: scale(0.5); }
+            to { transform: scale(1); }
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
         }
         
         @media (max-width: 768px) {
@@ -301,6 +363,18 @@
             
             h1 {
                 font-size: 1.8rem;
+            }
+            
+            .goal-text, .counter-text {
+                font-size: 3rem;
+            }
+            
+            .counter-subtext {
+                font-size: 1.5rem;
+            }
+            
+            .save-effect {
+                font-size: 3rem;
             }
         }
     </style>
@@ -365,11 +439,14 @@
         </div>
     </div>
 
+    <!-- الأصوات -->
     <audio id="goalSound" src="https://assets.mixkit.co/sfx/preview/mixkit-winning-chimes-2015.mp3" preload="auto"></audio>
-    <audio id="saveSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
     <audio id="counterSound" src="https://assets.mixkit.co/sfx/preview/mixkit-unlock-game-notification-253.mp3" preload="auto"></audio>
+    <audio id="saveSound" src="https://assets.mixkit.co/sfx/preview/mixkit-achievement-bell-600.mp3" preload="auto"></audio>
     <audio id="clickSound" src="https://assets.mixkit.co/sfx/preview/mixkit-select-click-1109.mp3" preload="auto"></audio>
     <audio id="buttonSound" src="https://assets.mixkit.co/sfx/preview/mixkit-arcade-game-jump-coin-216.mp3" preload="auto"></audio>
+    <audio id="crowdCheer" src="https://assets.mixkit.co/sfx/preview/mixkit-crowd-cheering-2223.mp3" preload="auto"></audio>
+    <audio id="counterAttack" src="https://assets.mixkit.co/sfx/preview/mixkit-sci-fi-positive-interface-2200.mp3" preload="auto"></audio>
 
     <script>
         const pageMap = {
@@ -379,7 +456,7 @@
         };
 
         const filename = location.pathname.split("/").pop();
-        const teamInfo = pageMap[filename] || { name: "", image: "images/2.png" };
+        const teamInfo = pageMap[filename] || { name: "", image: "images/1.png" };
 
         document.title = document.getElementById("team-name").innerText = teamInfo.name;
         document.getElementById("team-image").src = teamInfo.image;
@@ -394,8 +471,29 @@
             sound.play().catch(e => console.log("لم يتم تشغيل الصوت:", e));
         }
 
-        function createConfetti() {
-            const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+        function createFlyingBalls() {
+            for (let i = 0; i < 10; i++) {
+                const ball = document.createElement('div');
+                ball.className = 'ball';
+                
+                // تحديد اتجاهات عشوائية للكرات
+                const angle = Math.random() * Math.PI * 2;
+                const distance = 100 + Math.random() * 200;
+                const tx = Math.cos(angle) * distance;
+                const ty = Math.sin(angle) * distance;
+                
+                ball.style.setProperty('--tx', tx + 'px');
+                ball.style.setProperty('--ty', ty + 'px');
+                
+                document.body.appendChild(ball);
+                
+                setTimeout(() => {
+                    ball.remove();
+                }, 2000);
+            }
+        }
+
+        function createConfetti(...colors) {
             for (let i = 0; i < 100; i++) {
                 const confetti = document.createElement('div');
                 confetti.className = 'confetti';
@@ -410,22 +508,6 @@
                     confetti.remove();
                 }, 5000);
             }
-        }
-
-        function showGoalEffect(text) {
-            const effect = document.createElement('div');
-            effect.className = 'goal-effect';
-            
-            const goalText = document.createElement('div');
-            goalText.className = 'goal-text';
-            goalText.textContent = text;
-            
-            effect.appendChild(goalText);
-            document.body.appendChild(effect);
-            
-            setTimeout(() => {
-                effect.remove();
-            }, 2000);
         }
 
         function updateDisplay() {
@@ -491,37 +573,83 @@
             
             let resultMessage = "";
             if (selectedNumbers.includes(attackerChoice)) {
+                // حالة التصدي
                 resultMessage = "🧤 تصدي رائع من الحارس!";
-                shotResult.style.color = "var(--primary-color)";
-                shotResult.style.backgroundColor = "rgba(0, 123, 255, 0.1)";
+                shotResult.style.color = "#4cc9f0";
+                shotResult.style.backgroundColor = "rgba(76, 201, 240, 0.1)";
                 shotResult.classList.add("animate__rubberBand");
                 playSound("saveSound");
                 
-                // Show save effect
+                // مؤثر التصدي
                 const saveEffect = document.createElement('div');
                 saveEffect.className = 'save-effect';
                 saveEffect.textContent = 'تصدي!';
                 document.body.appendChild(saveEffect);
+                
+                // إضافة كرات متحركة
+                createFlyingBalls();
+                
                 setTimeout(() => {
                     saveEffect.remove();
                 }, 2000);
                 
             } else if (selectedDefenderNumbers.includes(attackerChoice)) {
+                // حالة الهجمة المرتدة
                 resultMessage = "⚽ هجمة مرتدة! الفريق المدافع سجل هدفًا!";
-                shotResult.style.color = "var(--success-color)";
-                shotResult.style.backgroundColor = "rgba(40, 167, 69, 0.1)";
+                shotResult.style.color = "#ff6b6b";
+                shotResult.style.backgroundColor = "rgba(255, 107, 107, 0.1)";
                 shotResult.classList.add("animate__heartBeat");
-                playSound("goalSound");
-                createConfetti();
-                showGoalEffect("هدف!");
+                playSound("counterAttack");
+                
+                // مؤثر الهجمة المرتدة
+                const counterEffect = document.createElement('div');
+                counterEffect.className = 'counter-effect';
+                
+                const counterText = document.createElement('div');
+                counterText.className = 'counter-text';
+                counterText.textContent = 'هجمة مرتدة!';
+                
+                const counterSubtext = document.createElement('div');
+                counterSubtext.className = 'counter-subtext';
+                counterSubtext.textContent = 'الفريق المدافع سجل هدفًا';
+                
+                counterEffect.appendChild(counterText);
+                counterEffect.appendChild(counterSubtext);
+                document.body.appendChild(counterEffect);
+                
+                // كونفيتي حمراء للهجمة المرتدة
+                createConfetti('#ff0000', '#ff6b6b', '#ff0000');
+                
+                setTimeout(() => {
+                    counterEffect.remove();
+                }, 2500);
+                
             } else {
+                // حالة الهدف العادي
                 resultMessage = "⚽ هدف! الفريق المهاجم سجل هدفًا!";
-                shotResult.style.color = "var(--success-color)";
+                shotResult.style.color = "#28A745";
                 shotResult.style.backgroundColor = "rgba(40, 167, 69, 0.1)";
                 shotResult.classList.add("animate__tada");
                 playSound("goalSound");
-                createConfetti();
-                showGoalEffect("هدف!");
+                playSound("crowdCheer"); // تصفيق الجمهور
+                
+                // مؤثر الهدف العادي
+                const goalEffect = document.createElement('div');
+                goalEffect.className = 'goal-effect';
+                
+                const goalText = document.createElement('div');
+                goalText.className = 'goal-text';
+                goalText.textContent = 'هدف!';
+                
+                goalEffect.appendChild(goalText);
+                document.body.appendChild(goalEffect);
+                
+                // كونفيتي خضراء وذهبية للهدف
+                createConfetti('#28A745', '#FFD700', '#FFFFFF');
+                
+                setTimeout(() => {
+                    goalEffect.remove();
+                }, 2000);
             }
 
             shotResult.innerHTML = resultMessage;
