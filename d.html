@@ -1,0 +1,924 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>التسديدة المستحيلة</title>
+  <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary-color: #2E7D32;
+      --secondary-color: #1B5E20;
+      --accent-color: #FFC107;
+      --error-color: #D32F2F;
+      --warning-color: #FF8F00;
+      --success-color: #388E3C;
+      --text-color: #333;
+      --light-bg: #f5f5f5;
+    }
+    
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    body {
+      font-family: 'Tajawal', sans-serif;
+      background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+      color: var(--text-color);
+      min-height: 100vh;
+      padding: 20px;
+      text-align: center;
+      direction: rtl;
+    }
+    
+    .main-container {
+      display: flex;
+      justify-content: space-between;
+      max-width: 1500px;
+      margin: 0 auto;
+      gap: 20px;
+    }
+    
+    .team-container {
+      width: 350px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    
+    .game-container {
+      flex: 1;
+      max-width: 900px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    
+    .team-logo {
+      width: 320px;
+      height: 520px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      margin-bottom: 20px;
+    }
+    
+    .team-name {
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin-bottom: 15px;
+      color: var(--primary-color);
+    }
+    
+    .team-select {
+      padding: 10px 15px;
+      border-radius: 8px;
+      border: 2px solid var(--primary-color);
+      font-family: 'Tajawal', sans-serif;
+      width: 100%;
+      font-size: 1rem;
+      margin-bottom: 15px;
+    }
+    
+    h1 {
+      color: var(--primary-color);
+      margin: 20px 0;
+      font-size: 2.2rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+    
+    .section {
+      background: white;
+      border-radius: 15px;
+      padding: 25px;
+      margin-bottom: 25px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+      width: 100%;
+    }
+    
+    .section-header {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    
+    .section-header .icon {
+      font-size: 1.8rem;
+    }
+    
+    h2 {
+      color: var(--secondary-color);
+      margin-bottom: 20px;
+      font-size: 1.5rem;
+    }
+    
+    .goal-container {
+      position: relative;
+      margin: 0px;
+      width: 100%;
+      max-width: 900px;
+      height: 400px;
+      background-image: url('https://www.pngplay.com/wp-content/uploads/12/Football-Goal-Net-Transparent-Images.png');
+      background-size: 100%;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    
+    .grid-container {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      grid-template-rows: repeat(2, 1fr);
+      gap: 20px;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      padding: 50px;
+    }
+    
+    .grid-btn {
+      background: rgba(37, 149, 189, 0.7);
+      border: 2px solid rgba(0, 0, 0, 0.5);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: bold;
+      color: var(--primary-color);
+      cursor: none;
+      transition: none;
+    }
+    
+    #goalArea .grid-btn:hover {
+      background: rgba(46, 125, 50, 0.3);
+      transform: scale(1.05);
+    }
+    
+    #goalArea .grid-btn.selected {
+      background: var(--primary-color);
+      color: white;
+      border-color: var(--secondary-color);
+    }
+    
+    .grid-btn:disabled {
+      background: #e0e0e0;
+      color: #9e9e9e;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .action-btn {
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 12px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 20px;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .action-btn:hover {
+      background: var(--secondary-color);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+    }
+    
+    .action-btn:disabled {
+      background: #bdbdbd;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .action-btn.shoot {
+      background: var(--accent-color);
+      color: var(--text-color);
+    }
+    
+    .action-btn.shoot:hover {
+      background: #FFB300;
+    }
+    
+    .character-icon {
+      position: absolute;
+      width: 50px;
+      height: 50px;
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      transition: all 0.5s ease;
+      opacity: 0;
+      transform: scale(0.5);
+      z-index: 10;
+    }
+    
+    .character-icon.visible {
+      opacity: 1;
+      transform: scale(1);
+    }
+    
+    .result-container {
+      margin-top: 30px;
+      padding: 20px;
+      border-radius: 10px;
+      font-size: 1.5rem;
+      font-weight: bold;
+      animation: fadeIn 0.5s ease;
+      display: none;
+    }
+    
+    .success {
+      background: rgba(56, 142, 60, 0.2);
+      color: var(--success-color);
+      border: 2px solid var(--success-color);
+    }
+    
+    .error {
+      background: rgba(211, 47, 47, 0.2);
+      color: var(--error-color);
+      border: 2px solid var(--error-color);
+    }
+    
+    .warning {
+      background: rgba(255, 193, 7, 0.2);
+      color: var(--warning-color);
+      border: 2px solid var(--warning-color);
+    }
+    
+    .selection-info {
+      margin-bottom: 15px;
+      font-size: 1rem;
+      color: #616161;
+    }
+    
+    .progress-steps {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 30px;
+      gap: 10px;
+    }
+    
+    .step {
+      width: 30px;
+      height: 30px;
+      border-radius: 50%;
+      background: #e0e0e0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      color: #9e9e9e;
+      position: relative;
+    }
+    
+    .step.active {
+      background: var(--primary-color);
+      color: white;
+    }
+    
+    .step.completed {
+      background: var(--success-color);
+      color: white;
+    }
+    
+    .step::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      right: -10px;
+      width: 10px;
+      height: 2px;
+      background: #bdbdbd;
+    }
+    
+    .step:last-child::after {
+      display: none;
+    }
+    
+    .step.completed::after {
+      background: var(--success-color);
+    }
+    
+    /* مؤثرات احتفالية */
+    .confetti {
+      position: fixed;
+      width: 10px;
+      height: 10px;
+      background-color: #f00;
+      opacity: 0;
+      top: 0;
+      left: 0;
+      z-index: 1000;
+      animation: confetti-fall 5s linear forwards;
+    }
+    
+    @keyframes confetti-fall {
+      0% {
+        transform: translateY(-100px) rotate(0deg);
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    
+    .ball-animation {
+      animation: ball-move 1s ease-in-out forwards;
+    }
+    
+    @keyframes ball-move {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.5);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+    
+    .celebration {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      z-index: 999;
+      display: none;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+    }
+    
+    .celebration-text {
+      color: white;
+      font-size: 3rem;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0,0,0,0.5);
+      margin-bottom: 20px;
+      animation: pulse 1s infinite;
+    }
+    
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+      100% { transform: scale(1); }
+    }
+    
+    .pulse {
+      animation: pulse 1.5s infinite;
+    }
+    
+    @media (max-width: 1200px) {
+      .main-container {
+        flex-direction: column;
+        align-items: center;
+      }
+      
+      .team-container {
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 20px;
+      }
+      
+      .game-container {
+        order: -1;
+        margin-bottom: 30px;
+      }
+    }
+    
+    @media (max-width: 768px) {
+      .grid-container {
+        padding: 10px;
+        gap: 5px;
+      }
+      
+      .goal-container {
+        height: 250px;
+      }
+      
+      h1 {
+        font-size: 1.8rem;
+      }
+      
+      h2 {
+        font-size: 1.3rem;
+      }
+      
+      .celebration-text {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="main-container">
+    <!-- الحاوية اليمنى للفريق المهاجم -->
+    <div class="team-container" id="attackerTeamContainer">
+      <div class="team-logo" id="attackerLogo"></div>
+      <div class="team-name" id="attackerName">الفريق المهاجم</div>
+      <select class="team-select" id="attackerTeam">
+        <option value="">اختر الفريق المهاجم</option>
+        <option value="real">ريال مدريد</option>
+        <option value="liver">ليفربول</option>
+        <option value="rayan">الريان</option>
+        <option value="brca">برشلونة</option>
+      </select>
+    </div>
+    
+    <!-- الحاوية الوسطى للعبة -->
+    <div class="game-container">
+      <h1>⚽ لعبة التسديد على المرمى</h1>
+      
+      <div class="progress-steps">
+        <div class="step active" id="step1">1</div>
+        <div class="step" id="step2">2</div>
+        <div class="step" id="step3">3</div>
+      </div>
+      
+      <div class="section" id="goalkeeperSection">
+        <div class="section-header">
+          <div class="icon">🧤</div>
+          <h2>اختر أماكن الحارس</h2>
+        </div>
+        <p class="selection-info">(اختر من 2 إلى 4 مناطق)</p>
+        
+        <div class="goal-container">
+          <div class="grid-container" id="goalkeeperChoices"></div>
+          <div id="iconsLayer"></div>
+        </div>
+        
+        <button class="action-btn" id="nextToDefender" disabled>
+          <span>التالي</span>
+          <span>→</span>
+        </button>
+      </div>
+      
+      <div class="section" id="defenderSection" style="display:none">
+        <div class="section-header">
+          <div class="icon">🛡️</div>
+          <h2>اختر أماكن المدافع</h2>
+        </div>
+        <p class="selection-info">(اختر من 2 إلى 4 مناطق)</p>
+        
+        <div class="goal-container">
+          <div class="grid-container" id="defenderChoices"></div>
+          <div id="iconsLayer2"></div>
+        </div>
+        
+        <button class="action-btn" id="nextToAttacker" disabled>
+          <span>التالي</span>
+          <span>→</span>
+        </button>
+      </div>
+      
+      <div class="section" id="attackerSection" style="display:none">
+        <div class="section-header">
+          <div class="icon">🎯</div>
+          <h2>اختر مكان التسديد</h2>
+        </div>
+        <p class="selection-info">(اختر مكانًا واحدًا أو مكانين)</p>
+        
+        <div class="goal-container">
+          <div class="grid-container" id="goalArea"></div>
+          <div id="iconsLayer3"></div>
+        </div>
+        
+        <button class="action-btn shoot pulse" id="shootBtn" disabled>
+          <span>🚀 تسديد</span>
+        </button>
+      </div>
+      
+      <div class="result-container" id="resultText"></div>
+    </div>
+    
+    <!-- الحاوية اليسرى للفريق المدافع -->
+    <div class="team-container" id="defenderTeamContainer">
+      <div class="team-logo" id="defenderLogo"></div>
+      <div class="team-name" id="defenderName">الفريق المدافع</div>
+      <select class="team-select" id="defenderTeam">
+        <option value="">اختر الفريق المدافع</option>
+        <option value="real">ريال مدريد</option>
+        <option value="liver">ليفربول</option>
+        <option value="rayan">الريان</option>
+        <option value="brca">برشلونة</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- طبقة الاحتفال -->
+  <div class="celebration" id="celebration">
+    <div class="celebration-text" id="celebrationText">🎉 هدف رائع! 🎉</div>
+    <button class="action-btn" id="playAgainBtn">العب مرة أخرى</button>
+  </div>
+
+  <!-- عناصر صوتية -->
+  <audio id="kickSound" preload="auto">
+    <source src="sounds/kick.mp3" type="audio/mpeg">
+    المتصفح لا يدعم عنصر الصوت
+  </audio>
+  <audio id="saveSound" preload="auto">
+    <source src="sounds/save.mp3" type="audio/mpeg">
+    المتصفح لا يدعم عنصر الصوت
+  </audio>
+  <audio id="goalSound" preload="auto">
+    <source src="sounds/goal.mp3" type="audio/mpeg">
+    المتصفح لا يدعم عنصر الصوت
+  </audio>
+  <audio id="crowdSound" preload="auto">
+    <source src="sounds/crowd.mp3" type="audio/mpeg">
+    المتصفح لا يدعم عنصر الصوت
+  </audio>
+  <audio id="counterSound" preload="auto">
+    <source src="sounds/counter.mp3" type="audio/mpeg">
+    المتصفح لا يدعم عنصر الصوت
+  </audio>
+
+  <script>
+    // عناصر DOM
+    const gkContainer = document.getElementById('goalkeeperChoices');
+    const dfContainer = document.getElementById('defenderChoices');
+    const goalContainer = document.getElementById('goalArea');
+    const iconsLayer = document.getElementById('iconsLayer');
+    const iconsLayer2 = document.getElementById('iconsLayer2');
+    const iconsLayer3 = document.getElementById('iconsLayer3');
+    const resultText = document.getElementById('resultText');
+    const celebration = document.getElementById('celebration');
+    const celebrationText = document.getElementById('celebrationText');
+    const playAgainBtn = document.getElementById('playAgainBtn');
+    
+    const nextToDefender = document.getElementById('nextToDefender');
+    const nextToAttacker = document.getElementById('nextToAttacker');
+    const shootBtn = document.getElementById('shootBtn');
+    
+    const step1 = document.getElementById('step1');
+    const step2 = document.getElementById('step2');
+    const step3 = document.getElementById('step3');
+    
+    // عناصر الفرق
+    const defenderTeam = document.getElementById('defenderTeam');
+    const attackerTeam = document.getElementById('attackerTeam');
+    const defenderLogo = document.getElementById('defenderLogo');
+    const attackerLogo = document.getElementById('attackerLogo');
+    const defenderName = document.getElementById('defenderName');
+    const attackerName = document.getElementById('attackerName');
+    
+    // عناصر الصوت
+    const kickSound = document.getElementById('kickSound');
+    const saveSound = document.getElementById('saveSound');
+    const goalSound = document.getElementById('goalSound');
+    const crowdSound = document.getElementById('crowdSound');
+    const counterSound = document.getElementById('counterSound');
+    
+    // المتغيرات
+    let goalkeeperSelections = [];
+    let defenderSelections = [];
+    let attackerSelections = [];
+    
+    const gkMin = 2, gkMax = 4;
+    const dfMin = 2, dfMax = 4;
+    const attackerMax = 2;
+    
+    // صور الشخصيات
+    const GK_IMAGE = 'https://images.vexels.com/media/users/3/218015/isolated/preview/5b73eeeca335e69fc4793559d12d56be-goalkeeper-waiting-shoot-character.png';
+    const DF_IMAGE = 'https://cdn-icons-png.flaticon.com/512/861/861512.png';
+    const BALL_IMAGE = 'https://cdn-icons-png.flaticon.com/512/3199/3199260.png';
+    
+    // صور الفرق
+    const TEAM_LOGOS = {
+      'real': 'images/real.png',
+      'liver': 'images/liver.png',
+      'rayan': 'images/rayan.png',
+      'brca': 'images/Brca.png'
+    };
+    
+    const TEAM_NAMES = {
+      'real': 'ريال مدريد',
+      'liver': 'ليفربول',
+      'rayan': 'الريان',
+      'brca': 'برشلونة'
+    };
+    
+    // تهيئة اللعبة
+    function initGame() {
+      // إنشاء أزرار المناطق
+      for (let i = 1; i <= 10; i++) {
+        gkContainer.appendChild(createGridButton(i, 'gk'));
+        dfContainer.appendChild(createGridButton(i, 'df'));
+        goalContainer.appendChild(createGridButton(i, 'attacker'));
+      }
+      
+      // أحداث اختيار الفرق
+      defenderTeam.addEventListener('change', updateTeamLogos);
+      attackerTeam.addEventListener('change', updateTeamLogos);
+      
+      // أحداث الأزرار
+      nextToDefender.addEventListener('click', () => {
+        document.getElementById('goalkeeperSection').style.display = 'none';
+        document.getElementById('defenderSection').style.display = 'block';
+        step1.classList.remove('active');
+        step1.classList.add('completed');
+        step2.classList.add('active');
+      });
+      
+      nextToAttacker.addEventListener('click', () => {
+        document.getElementById('defenderSection').style.display = 'none';
+        document.getElementById('attackerSection').style.display = 'block';
+        step2.classList.remove('active');
+        step2.classList.add('completed');
+        step3.classList.add('active');
+      });
+      
+      shootBtn.addEventListener('click', shootBall);
+      playAgainBtn.addEventListener('click', resetGame);
+    }
+    
+    // تحديث شعارات وأسماء الفرق
+    function updateTeamLogos() {
+      const defenderValue = defenderTeam.value;
+      const attackerValue = attackerTeam.value;
+      
+      if (defenderValue && TEAM_LOGOS[defenderValue]) {
+        defenderLogo.style.backgroundImage = `url('${TEAM_LOGOS[defenderValue]}')`;
+        defenderName.textContent = TEAM_NAMES[defenderValue];
+      } else {
+        defenderLogo.style.backgroundImage = '';
+        defenderName.textContent = 'الفريق المدافع';
+      }
+      
+      if (attackerValue && TEAM_LOGOS[attackerValue]) {
+        attackerLogo.style.backgroundImage = `url('${TEAM_LOGOS[attackerValue]}')`;
+        attackerName.textContent = TEAM_NAMES[attackerValue];
+      } else {
+        attackerLogo.style.backgroundImage = '';
+        attackerName.textContent = 'الفريق المهاجم';
+      }
+    }
+    
+    // إنشاء زر المنطقة
+    function createGridButton(number, role) {
+      const btn = document.createElement('button');
+      btn.className = 'grid-btn';
+      btn.textContent = number;
+      btn.dataset.number = number;
+      
+      btn.addEventListener('click', () => {
+        const num = parseInt(btn.dataset.number);
+        
+        if (role === 'gk') {
+          toggleSelection(btn, goalkeeperSelections, gkMax);
+          nextToDefender.disabled = goalkeeperSelections.length < gkMin;
+        }
+        else if (role === 'df') {
+          toggleSelection(btn, defenderSelections, dfMax);
+          nextToAttacker.disabled = defenderSelections.length < dfMin;
+        }
+        else if (role === 'attacker') {
+          toggleSelection(btn, attackerSelections, attackerMax);
+          shootBtn.disabled = attackerSelections.length === 0;
+        }
+      });
+      
+      return btn;
+    }
+    
+    // تبديل الاختيار
+    function toggleSelection(button, array, max) {
+      const num = parseInt(button.dataset.number);
+      
+      if (array.includes(num)) {
+        array.splice(array.indexOf(num), 1);
+        button.classList.remove('selected');
+      } 
+      else if (array.length < max) {
+        array.push(num);
+        button.classList.add('selected');
+      }
+    }
+    
+    // تسديد الكرة
+    function shootBall() {
+      shootBtn.classList.remove('pulse');
+      shootBtn.disabled = true;
+      
+      // تشغيل صوت التسديد
+      kickSound.play();
+      
+      // عرض الحارس
+      setTimeout(() => {
+        displayCharacters(goalkeeperSelections, GK_IMAGE, iconsLayer3, 'gk');
+        counterSound.play(); // صوت ظهور الحارس
+      }, 300);
+      
+      // عرض المدافعين بعد تأخير
+      setTimeout(() => {
+        displayCharacters(defenderSelections, DF_IMAGE, iconsLayer3, 'df');
+        counterSound.play(); // صوت ظهور المدافعين
+      }, 900);
+      
+      // عرض الكرة بعد تأخير
+      setTimeout(() => {
+        displayCharacters(attackerSelections, BALL_IMAGE, iconsLayer3, 'ball ball-animation');
+        kickSound.play(); // صوت تسديد الكرة
+      }, 1500);
+      
+      // عرض النتيجة بعد تأخير إضافي
+      setTimeout(() => {
+        showResult();
+      }, 2200);
+    }
+    
+    // عرض الشخصيات (تم التعديل لتصحيح مشكلة العكس)
+    function displayCharacters(positions, imageUrl, container, className) {
+      positions.forEach(pos => {
+        const icon = document.createElement('div');
+        icon.className = `character-icon ${className}`;
+        icon.style.backgroundImage = `url('${imageUrl}')`;
+        
+        // حساب الموضع بناءً على رقم المنطقة (تم التعديل لتصحيح مشكلة العكس)
+        const row = pos <= 5 ? 0 : 1;
+        const col = (pos - 1) % 5;
+        const cellWidth = 100 / 5;
+        const cellHeight = 100 / 2;
+        
+        // تعديل حساب الموضع ليكون متناسقًا مع الاتجاه RTL
+        icon.style.right = `${col * cellWidth + cellWidth/2 - 5}%`;
+        icon.style.top = `${row * cellHeight + cellHeight/2 - 5}%`;
+        
+        container.appendChild(icon);
+        
+        // تأخير بسيط لإظهار الصورة مع تأثير
+        setTimeout(() => {
+          icon.classList.add('visible');
+        }, 50);
+      });
+    }
+    
+    // عرض النتيجة
+    function showResult() {
+      const shot = attackerSelections[0]; // أول مكان تسديد
+      let result, resultClass, celebrationMessage;
+      
+      if (goalkeeperSelections.includes(shot)) {
+        result = '🧤 تصدي رائع من الحارس!';
+        resultClass = 'error';
+        celebrationMessage = '🛡️ تصدي ممتاز!';
+        saveSound.play(); // صوت التصدي
+        showCelebration(celebrationMessage, 'error');
+      } 
+      else if (defenderSelections.includes(shot)) {
+        result = '🔄 تصدي المدافع وهجمة مرتدة! سجل الفريق المدافع!';
+        resultClass = 'warning';
+        celebrationMessage = '⚡ هجمة مرتدة ناجحة!';
+        saveSound.play(); // صوت التصدي
+        showCelebration(celebrationMessage, 'warning');
+      } 
+      else {
+        result = '🎯 هدف رائع! تهانينا للمهاجم!';
+        resultClass = 'success';
+        celebrationMessage = '🎉 هدف رائع!';
+        goalSound.play(); // صوت الهدف
+        crowdSound.play(); // صوت الجمهور
+        showCelebration(celebrationMessage, 'success');
+      }
+      
+      resultText.textContent = result;
+      resultText.className = `result-container ${resultClass}`;
+      resultText.style.display = 'block';
+    }
+    
+    // عرض مؤثرات الاحتفال
+    function showCelebration(message, type) {
+      celebration.style.display = 'flex';
+      celebrationText.textContent = message;
+      
+      // تغيير لون النص حسب النوع
+      if (type === 'success') {
+        celebrationText.style.color = 'var(--success-color)';
+        // إنشاء قطع الكونفيتي للاحتفال بنجاح
+        for (let i = 0; i < 100; i++) {
+          createConfetti();
+        }
+      } else if (type === 'warning') {
+        celebrationText.style.color = 'var(--warning-color)';
+      } else {
+        celebrationText.style.color = 'var(--error-color)';
+      }
+    }
+    
+    // إنشاء قطع الكونفيتي
+    function createConfetti() {
+      const confetti = document.createElement('div');
+      confetti.className = 'confetti';
+      
+      // ألوان عشوائية
+      const colors = ['#f00', '#0f0', '#00f', '#ff0', '#f0f', '#0ff'];
+      const randomColor = colors[Math.floor(Math.random() * colors.length)];
+      
+      // أحجام عشوائية
+      const size = Math.random() * 10 + 5;
+      
+      // مواقع عشوائية
+      const left = Math.random() * 100;
+      
+      // تطبيق الأنماط
+      confetti.style.backgroundColor = randomColor;
+      confetti.style.width = `${size}px`;
+      confetti.style.height = `${size}px`;
+      confetti.style.left = `${left}%`;
+      confetti.style.animationDuration = `${Math.random() * 3 + 2}s`;
+      
+      // إضافة إلى الجسم
+      document.body.appendChild(confetti);
+      
+      // إزالة بعد الانتهاء من الرسوم المتحركة
+      setTimeout(() => {
+        confetti.remove();
+      }, 5000);
+    }
+    
+    // إعادة تعيين اللعبة
+    function resetGame() {
+      // إيقاف جميع الأصوات
+      kickSound.pause();
+      kickSound.currentTime = 0;
+      saveSound.pause();
+      saveSound.currentTime = 0;
+      goalSound.pause();
+      goalSound.currentTime = 0;
+      crowdSound.pause();
+      crowdSound.currentTime = 0;
+      counterSound.pause();
+      counterSound.currentTime = 0;
+      
+      // إخفاء الاحتفال
+      celebration.style.display = 'none';
+      
+      // إعادة تعيين المتغيرات
+      goalkeeperSelections = [];
+      defenderSelections = [];
+      attackerSelections = [];
+      
+      // إعادة تعيين الواجهة
+      document.querySelectorAll('.grid-btn').forEach(btn => {
+        btn.classList.remove('selected');
+        btn.disabled = false;
+      });
+      
+      document.getElementById('goalkeeperSection').style.display = 'block';
+      document.getElementById('defenderSection').style.display = 'none';
+      document.getElementById('attackerSection').style.display = 'none';
+      
+      nextToDefender.disabled = true;
+      nextToAttacker.disabled = true;
+      shootBtn.disabled = true;
+      shootBtn.classList.add('pulse');
+      
+      // إعادة تعيين خطوات التقدم
+      step1.classList.add('active');
+      step1.classList.remove('completed');
+      step2.classList.remove('active', 'completed');
+      step3.classList.remove('active', 'completed');
+      
+      // إخفاء النتيجة
+      resultText.style.display = 'none';
+      
+      // مسح الأيقونات
+      iconsLayer.innerHTML = '';
+      iconsLayer2.innerHTML = '';
+      iconsLayer3.innerHTML = '';
+      
+      // إزالة جميع قطع الكونفيتي
+      document.querySelectorAll('.confetti').forEach(el => el.remove());
+    }
+    
+    // بدء اللعبة
+    initGame();
+  </script>
+</body>
+</html>
